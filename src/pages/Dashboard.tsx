@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 // Importez les icônes nécessaires pour la navigation
-import { Menu, FileText, CheckCircle2, XCircle, Archive, LifeBuoy, Database, Home, HelpCircle, LogOut, User } from "lucide-react";
+import { Menu, FileText, CheckCircle2, XCircle, Archive, LifeBuoy, Home, HelpCircle, LogOut, User, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
@@ -16,7 +16,7 @@ import { useSearchParams, Link, useNavigate } from "react-router-dom";
 // CORRECTION D'IMPORTATION : Chemin explicite pour la résolution
 import DocumentsPage from "./Documents.tsx";
 import Profile from "./Profile.tsx";
-import Settings from "./Settings.tsx"; 
+import SettingsPage from "./Settings.tsx"; 
 
 // --- DÉFINITIONS STATIQUES ---
 const CATEGORIES = [
@@ -125,9 +125,9 @@ const HomeContent = ({ refreshKey, onDocumentClick }: { refreshKey: number, onDo
                   </div>
 
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between gap-2 sm:gap-3">
+                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 sm:gap-3">
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-medium text-foreground truncate text-sm sm:text-base">
+                        <h3 className="font-medium text-foreground truncate text-xs sm:text-base">
                           {doc.nom_fichier}
                         </h3>
                         {/* Affiche la catégorie si ce n'est pas la catégorie par défaut (pour distinguer les Archivés) */}
@@ -136,7 +136,7 @@ const HomeContent = ({ refreshKey, onDocumentClick }: { refreshKey: number, onDo
                                 Classé dans : {doc.categorie}
                             </p>
                         )}
-                        <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
+                        <p className="text-xs text-muted-foreground mt-0.5">
                           {formatDisplayDate(doc.date_ajout)}
                         </p>
                       </div>
@@ -144,7 +144,7 @@ const HomeContent = ({ refreshKey, onDocumentClick }: { refreshKey: number, onDo
                       {/* Badge pour l'état "Signé" / "Pas Signé" */}
                       <Badge
                         variant={signedStatus ? "default" : "destructive"}
-                        className={`flex items-center gap-1 transition-all duration-300 flex-shrink-0 text-xs sm:text-sm h-fit ${
+                        className={`flex items-center gap-1 transition-all duration-300 flex-shrink-0 text-xs h-fit w-fit ${
                           signedStatus
                             ? "bg-success hover:bg-success/90"
                             : "bg-destructive hover:bg-destructive/90"
@@ -324,6 +324,7 @@ const Dashboard = () => {
                 <span>Mon Profil</span>
               </DropdownMenuItem>
               <DropdownMenuItem className="cursor-pointer" onClick={handleViewSettings}>
+                <Settings className="mr-2 h-4 w-4" />
                 <span>Paramètres</span>
               </DropdownMenuItem>
               <DropdownMenuSeparator />

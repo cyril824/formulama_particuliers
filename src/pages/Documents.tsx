@@ -129,9 +129,9 @@ const DocumentsPage: React.FC<DocumentsPageProps> = ({ currentCategory, refreshK
                         return (
                             <div
                                 key={doc.id}
-                                className="bg-white rounded-xl p-3 sm:p-4 shadow-md hover:shadow-lg transition-shadow duration-300 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-3"
+                                className="bg-white rounded-xl p-3 sm:p-4 shadow-md hover:shadow-lg transition-shadow duration-300"
                             >
-                                {/* Clic pour ouvrir le visualiseur (Utilise le prop onDocumentClick) */}
+                                {/* Contenu principal */}
                                 <div
                                     onClick={() => onDocumentClick(doc)}
                                     className="flex items-start gap-2 sm:gap-3 flex-1 min-w-0 p-2 -m-2 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
@@ -139,30 +139,32 @@ const DocumentsPage: React.FC<DocumentsPageProps> = ({ currentCategory, refreshK
                                 >
                                     <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-500 flex-shrink-0 mt-0.5 sm:mt-1" />
                                     <div className="min-w-0 flex-1">
-                                        <h3 className="font-medium text-gray-900 break-words line-clamp-2 text-sm sm:text-base">
+                                        <h3 className="font-medium text-gray-900 truncate text-xs sm:text-base">
                                             {doc.nom_fichier}
                                         </h3>
-                                        <p className="text-xs sm:text-sm text-gray-500 break-words line-clamp-1">
+                                        <p className="text-xs text-gray-500 truncate hidden sm:block">
                                             Chemin: {doc.chemin_local}
                                         </p>
                                         <p className="text-xs text-gray-400 mt-1">
-                                            Ajouté le: {doc.date_ajout ? doc.date_ajout.substring(0, 10) : 'Date inconnue'}
+                                            {doc.date_ajout ? doc.date_ajout.substring(0, 10) : 'Date inconnue'}
                                         </p>
                                     </div>
                                 </div>
 
-                                {/* 🚨 Bouton de Suppression (Reste un bouton séparé) */}
-                                <button
-                                    onClick={(e) => {
-                                        e.stopPropagation(); // Empêche le clic de se propager à la zone d'ouverture
-                                        handleDelete(doc.id, doc.nom_fichier);
-                                    }}
-                                    disabled={isDeleting}
-                                    title={`Supprimer ${doc.nom_fichier}`}
-                                    className={`text-red-500 p-2 rounded-full transition-colors hover:bg-red-100 flex-shrink-0 ${isDeleting ? 'opacity-50 cursor-not-allowed' : ''}`}
-                                >
-                                    <Trash2 className="w-5 h-5" />
-                                </button>
+                                {/* Bouton de suppression */}
+                                <div className="flex justify-end mt-2 sm:mt-0">
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleDelete(doc.id, doc.nom_fichier);
+                                        }}
+                                        disabled={isDeleting}
+                                        title={`Supprimer ${doc.nom_fichier}`}
+                                        className={`text-red-500 p-2 rounded-full transition-colors hover:bg-red-100 flex-shrink-0 ${isDeleting ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                    >
+                                        <Trash2 className="w-5 h-5" />
+                                    </button>
+                                </div>
                             </div>
                         );
                     })
