@@ -129,17 +129,17 @@ const DocumentsPage: React.FC<DocumentsPageProps> = ({ currentCategory, refreshK
                         return (
                             <div
                                 key={doc.id}
-                                className="bg-white rounded-xl p-3 sm:p-4 shadow-md hover:shadow-lg transition-shadow duration-300"
+                                className="bg-white rounded-xl p-3 sm:p-4 shadow-md hover:shadow-lg transition-shadow duration-300 w-full max-w-full overflow-hidden"
                             >
                                 {/* Contenu principal */}
                                 <div
                                     onClick={() => onDocumentClick(doc)}
-                                    className="flex items-start gap-2 sm:gap-3 flex-1 min-w-0 p-2 -m-2 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
+                                    className="flex items-start gap-2 sm:gap-3 flex-1 min-w-0 p-2 -m-2 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer w-full max-w-full"
                                     title={`Ouvrir ${doc.nom_fichier}`}
                                 >
                                     <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-500 flex-shrink-0 mt-0.5 sm:mt-1" />
-                                    <div className="min-w-0 flex-1">
-                                        <h3 className="font-medium text-gray-900 truncate text-xs sm:text-base">
+                                    <div className="min-w-0 flex-1 w-full max-w-full">
+                                        <h3 className="font-medium text-gray-900 break-words text-xs sm:text-base whitespace-normal">
                                             {doc.nom_fichier}
                                         </h3>
                                         <p className="text-xs text-gray-500 truncate hidden sm:block">

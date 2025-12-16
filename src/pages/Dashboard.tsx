@@ -116,7 +116,7 @@ const HomeContent = ({ refreshKey, onDocumentClick }: { refreshKey: number, onDo
                 key={doc.id}
                 // Utilise le handler de clic au lieu d'un <a> tag
                 onClick={() => onDocumentClick(doc)}
-                className="bg-card rounded-xl p-4 shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-medium)] transition-all duration-300 animate-in slide-in-from-bottom cursor-pointer"
+                className="bg-card rounded-xl p-4 shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-medium)] transition-all duration-300 animate-in slide-in-from-bottom cursor-pointer w-full max-w-full overflow-hidden"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
                 <div className="flex items-start gap-3">
@@ -124,10 +124,10 @@ const HomeContent = ({ refreshKey, onDocumentClick }: { refreshKey: number, onDo
                     <FileText className="w-5 h-5 text-primary" />
                   </div>
 
-                  <div className="flex-1 min-w-0">
-                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 sm:gap-3">
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-medium text-foreground truncate text-xs sm:text-base">
+                  <div className="flex-1 min-w-0 w-full max-w-full">
+                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 sm:gap-3 w-full max-w-full">
+                      <div className="flex-1 min-w-0 w-full max-w-full">
+                        <h3 className="font-medium text-foreground break-words text-xs sm:text-base whitespace-normal">
                           {doc.nom_fichier}
                         </h3>
                         {/* Affiche la catégorie si ce n'est pas la catégorie par défaut (pour distinguer les Archivés) */}
@@ -293,7 +293,7 @@ const Dashboard = () => {
   const currentCategoryName = isDocumentCategory ? currentView : '';
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-secondary/30 to-accent">
+    <div className="min-h-screen bg-gradient-to-br from-background via-secondary/30 to-accent overflow-hidden flex flex-col">
       
       {/* Header */}
       <header className="bg-card/80 backdrop-blur-sm border-b border-border sticky top-0 z-40 shadow-[var(--shadow-soft)]">
@@ -338,7 +338,7 @@ const Dashboard = () => {
       </header>
 
 
-      <main className="w-full px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-6">
+      <main className="w-full max-w-full overflow-x-hidden px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-6 flex-1">
         
         {/* Upload Section (Toujours visible en haut) */}
         {currentView === 'home' && (
