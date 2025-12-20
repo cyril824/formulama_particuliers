@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Upload } from 'lucide-react';
 import { useDocumentContext } from '@/context/DocumentContext';
 
@@ -18,6 +18,7 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({ onUploadSuccess }) => {
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [uploadMessage, setUploadMessage] = useState<string>('');
     const [isUploading, setIsUploading] = useState<boolean>(false);
+    const [messageVisible, setMessageVisible] = useState<boolean>(true);
     
     // État pour gérer la catégorie choisie par l'utilisateur
     const [selectedCategory, setSelectedCategory] = useState(CATEGORIES[0]);
@@ -27,6 +28,22 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({ onUploadSuccess }) => {
 
     // Définition de l'URL du serveur API — utilise le port 5001 pour Flask
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001';
+
+    // Efface le message automatiquement après 4 secondes pour les messages de succès
+    useEffect(() => {
+        if (uploadMessage.startsWith('✅')) {
+            const timer = setTimeout(() => {
+                setMessageVisible(false);
+                // Efface complètement le message après l'animation de fade
+                const fadeTimer = setTimeout(() => {
+                    setUploadMessage('');
+                    setMessageVisible(true);
+                }, 500);
+                return () => clearTimeout(fadeTimer);
+            }, 4000);
+            return () => clearTimeout(timer);
+        }
+    }, [uploadMessage]);
 
     // Gère la sélection du fichier via l'input
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -149,7 +166,7 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({ onUploadSuccess }) => {
 
             {/* Affichage du message de statut */}
             {uploadMessage && (
-                <div className={`mt-3 p-3 rounded-md text-xs sm:text-sm break-words ${
+                <div className={`mt-3 p-3 rounded-md text-xs sm:text-sm break-words transition-opacity duration-500 ${messageVisible ? 'opacity-100' : 'opacity-0'} ${
                     uploadMessage.startsWith('✅') 
                         ? 'bg-green-100 dark:bg-emerald-900/30 text-green-700 dark:text-emerald-300 border border-green-300 dark:border-emerald-700/50' 
                         : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 border border-red-300 dark:border-red-700/50'
