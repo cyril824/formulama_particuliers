@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { useDocumentContext } from "@/context/DocumentContext";
 
 // Interface pour les données utilisateur
 interface UserData {
@@ -119,6 +120,8 @@ interface UserData {
 
 const Profile = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const { documentChanged } = useDocumentContext();
 
   // État des données utilisateur avec valeurs par défaut
   const [isEditingProfile, setIsEditingProfile] = useState(false);
@@ -300,23 +303,20 @@ const Profile = () => {
     }
   };
 
-  // Charger les stats au montage
+  // Charger les stats au montage initial
   useEffect(() => {
     fetchDocumentStats();
-    
-    // Rafraîchir les stats chaque 3 secondes pour détecter les changements
-    const statsInterval = setInterval(fetchDocumentStats, 3000);
-    
-    return () => clearInterval(statsInterval);
   }, []);
 
+  // Rafraîchir les stats quand des documents changent
+  useEffect(() => {
+    fetchDocumentStats();
+  }, [documentChanged]);
   // Gestion de l'édition du profil
   const handleEditProfile = () => {
     setEditedData(userData);
     setIsEditingProfile(true);
   };
-
-  const { toast } = useToast();
 
   const handleSaveProfile = () => {
     setUserData(editedData);

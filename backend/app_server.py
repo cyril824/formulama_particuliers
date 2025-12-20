@@ -6,7 +6,7 @@ from werkzeug.utils import secure_filename
 import urllib.parse 
 
 # Importe toutes les fonctions nécessaires
-from gestion_db import ajouter_document, recuperer_documents_par_categorie, supprimer_document, initialiser_base_de_donnees, recuperer_4_derniers_documents, diagnostiquer_fichiers_locaux 
+from gestion_db import ajouter_document, recuperer_documents_par_categorie, supprimer_document, initialiser_base_de_donnees, recuperer_4_derniers_documents, diagnostiquer_fichiers_locaux, recuperer_tous_documents 
 
 # 1. Configuration de l'application Flask
 app = Flask(__name__)
@@ -76,6 +76,16 @@ def api_ajouter_document():
 def api_recuperer_documents(categorie):
     documents = recuperer_documents_par_categorie(categorie)
     return jsonify(documents), 200
+
+# Endpoint pour récupérer TOUS les documents
+@app.route('/api/documents/all', methods=['GET'])
+def api_recuperer_tous_documents():
+    try:
+        documents = recuperer_tous_documents()
+        return jsonify(documents), 200
+    except Exception as e:
+        print(f"Erreur lors de la récupération de tous les documents: {e}")
+        return jsonify({"error": "Erreur interne du serveur"}), 500
 
 # Endpoint pour récupérer les 4 documents récents
 @app.route('/api/documents/recents', methods=['GET'])

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Upload } from 'lucide-react';
+import { useDocumentContext } from '@/context/DocumentContext';
 
 // Définitions des catégories disponibles (doivent correspondre aux noms dans la BDD)
 const CATEGORIES = [
@@ -19,7 +20,10 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({ onUploadSuccess }) => {
     const [isUploading, setIsUploading] = useState<boolean>(false);
     
     // État pour gérer la catégorie choisie par l'utilisateur
-    const [selectedCategory, setSelectedCategory] = useState(CATEGORIES[0]); 
+    const [selectedCategory, setSelectedCategory] = useState(CATEGORIES[0]);
+    
+    // Hook pour notifier les changements de documents
+    const { notifyDocumentChange } = useDocumentContext(); 
 
     // Définition de l'URL du serveur API — utilise le port 5001 pour Flask
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001';
@@ -66,7 +70,10 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({ onUploadSuccess }) => {
 
             if (response.ok) {
                 setUploadMessage(`✅ Succès ! ${selectedFile.name} enregistré dans "${selectedCategory}".`);
-                setSelectedFile(null); 
+                setSelectedFile(null);
+                
+                // Notifier que des documents ont changé
+                notifyDocumentChange();
                 
                 // Appelle la fonction passée par le parent (Dashboard) pour forcer le rafraîchissement
                 onUploadSuccess(); 
@@ -82,15 +89,15 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({ onUploadSuccess }) => {
     };
 
     return (
-        <div className="bg-white rounded-xl p-4 sm:p-8 shadow-lg border border-indigo-100 space-y-4 w-full max-w-full overflow-hidden">
-            <h2 className="text-lg sm:text-xl font-semibold text-gray-800 flex items-center gap-2">
-                <Upload className="w-5 h-5 text-indigo-600 flex-shrink-0" />
+        <div className="bg-white dark:bg-slate-900 rounded-xl p-4 sm:p-8 shadow-lg border border-indigo-100 dark:border-slate-700 space-y-4 w-full max-w-full overflow-hidden">
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-800 dark:text-white flex items-center gap-2">
+                <Upload className="w-5 h-5 text-indigo-600 dark:text-indigo-400 flex-shrink-0" />
                 <span className="truncate">Télécharger un document</span>
             </h2>
             
             <div className="flex flex-col space-y-4 min-w-0 w-full max-w-full">
                 <div 
-                    className="border-2 border-dashed border-gray-300 rounded-lg p-4 sm:p-10 text-center hover:border-indigo-500 transition-colors cursor-pointer w-full"
+                    className="border-2 border-dashed border-gray-300 dark:border-indigo-500 rounded-lg p-4 sm:p-10 text-center hover:border-indigo-500 dark:hover:border-indigo-400 transition-colors cursor-pointer w-full dark:bg-indigo-950/30"
                     onClick={() => document.getElementById('fileInput')?.click()}
                 >
                     <input 
@@ -100,21 +107,21 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({ onUploadSuccess }) => {
                         className="hidden" 
                         accept="application/pdf, .doc, .docx, image/jpeg, image/png"
                     />
-                    <Upload className="w-6 sm:w-8 h-6 sm:h-8 mx-auto text-gray-400 mb-2" />
-                    <p className="text-sm sm:text-base text-gray-600 break-words">
+                    <Upload className="w-6 sm:w-8 h-6 sm:h-8 mx-auto text-gray-400 dark:text-slate-500 mb-2" />
+                    <p className="text-sm sm:text-base text-gray-600 dark:text-slate-300 break-words">
                         Cliquez pour parcourir vos fichiers et déposez votre document
                     </p>
                     <br/>
-                    <span className="text-xs sm:text-sm text-gray-400">PDF, DOC, DOCX, JPG, PNG (max. 10MB)</span>
+                    <span className="text-xs sm:text-sm text-gray-400 dark:text-slate-500">PDF, DOC, DOCX, JPG, PNG (max. 10MB)</span>
                 </div>
 
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 w-full min-w-0">
                     <div className="flex flex-col sm:flex-row sm:items-center gap-2 min-w-0 flex-1">
-                        <label className="text-xs sm:text-sm font-medium text-gray-700 whitespace-nowrap flex-shrink-0">Ranger dans :</label>
+                        <label className="text-xs sm:text-sm font-medium text-gray-700 dark:text-slate-300 whitespace-nowrap flex-shrink-0">Ranger dans :</label>
                         <select 
                             value={selectedCategory} 
                             onChange={(e) => setSelectedCategory(e.target.value)}
-                            className="p-2 border border-gray-300 rounded-md shadow-sm text-xs sm:text-sm w-full min-w-0 max-w-full"
+                            className="p-2 border border-gray-300 dark:border-slate-600 rounded-md shadow-sm text-xs sm:text-sm w-full min-w-0 max-w-full bg-white dark:bg-slate-800 text-gray-900 dark:text-white"
                             disabled={isUploading}
                         >
                             {CATEGORIES.map(cat => (
@@ -128,8 +135,8 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({ onUploadSuccess }) => {
                         disabled={isUploading || !selectedFile}
                         className={`px-4 py-2 rounded-md font-semibold text-white transition-colors text-sm flex-shrink-0 whitespace-nowrap ${
                             (isUploading || !selectedFile) 
-                                ? 'bg-gray-400 cursor-not-allowed' 
-                                : 'bg-indigo-600 hover:bg-indigo-700'
+                                ? 'bg-gray-400 dark:bg-slate-700 cursor-not-allowed' 
+                                : 'bg-indigo-600 dark:bg-indigo-700 hover:bg-indigo-700 dark:hover:bg-indigo-600'
                         }`}
                     >
                         {isUploading ? 'Enregistrement...' : 'Enregistrer'}
@@ -140,7 +147,9 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({ onUploadSuccess }) => {
             {/* Affichage du message de statut */}
             {uploadMessage && (
                 <div className={`mt-3 p-3 rounded-md text-xs sm:text-sm break-words ${
-                    uploadMessage.startsWith('✅') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                    uploadMessage.startsWith('✅') 
+                        ? 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300' 
+                        : 'bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300'
                 }`}>
                     {uploadMessage}
                 </div>

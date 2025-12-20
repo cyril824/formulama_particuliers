@@ -4,6 +4,8 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { ThemeProvider } from "@/context/ThemeContext";
+import { DocumentProvider } from "@/context/DocumentContext";
 
 // Utilisation de React.lazy pour les imports dynamiques, plus robustes pour la résolution de chemin.
 const Login = React.lazy(() => import("./pages/Login"));
@@ -24,27 +26,31 @@ const FallbackLoader = () => (
 );
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        {/* Suspense permet d'afficher un indicateur de chargement pendant le chargement dynamique du composant */}
-        <Suspense fallback={<FallbackLoader />}>
-            <Routes>
-              <Route path="/" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/settings" element={<Settings />} />
-              {/* La nouvelle route pour le centre d'aide */}
-              <Route path="/aide" element={<HelpPage />} /> 
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-        </Suspense>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
+  <ThemeProvider>
+    <DocumentProvider>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            {/* Suspense permet d'afficher un indicateur de chargement pendant le chargement dynamique du composant */}
+            <Suspense fallback={<FallbackLoader />}>
+                <Routes>
+                  <Route path="/" element={<Login />} />
+                  <Route path="/register" element={<Register />} />
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/profile" element={<Profile />} />
+                  <Route path="/settings" element={<Settings />} />
+                  {/* La nouvelle route pour le centre d'aide */}
+                  <Route path="/aide" element={<HelpPage />} /> 
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+            </Suspense>
+          </BrowserRouter>
+        </TooltipProvider>
+      </QueryClientProvider>
+    </DocumentProvider>
+  </ThemeProvider>
 );
 
 export default App;

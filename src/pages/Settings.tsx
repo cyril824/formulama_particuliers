@@ -3,12 +3,13 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowLeft, Bell, Lock, Eye, Moon, Sun } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useTheme } from "@/context/ThemeContext";
 
 const Settings = () => {
   const navigate = useNavigate();
+  const { darkMode, toggleDarkMode } = useTheme();
   const [settings, setSettings] = useState({
     notifications: true,
-    darkMode: false,
     twoFactor: false,
     emailUpdates: true,
   });
@@ -65,7 +66,7 @@ const Settings = () => {
         <Card className="p-3 sm:p-6 mb-3 sm:mb-4">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-3 min-w-0">
-              {settings.darkMode ? (
+              {darkMode ? (
                 <Moon className="w-5 h-5 text-primary flex-shrink-0" />
               ) : (
                 <Sun className="w-5 h-5 text-primary flex-shrink-0" />
@@ -76,14 +77,14 @@ const Settings = () => {
               </div>
             </div>
             <button
-              onClick={() => toggleSetting('darkMode')}
+              onClick={toggleDarkMode}
               className={`relative w-12 h-6 rounded-full transition-colors flex-shrink-0 ${
-                settings.darkMode ? 'bg-primary' : 'bg-muted'
+                darkMode ? 'bg-primary' : 'bg-muted'
               }`}
             >
               <div
                 className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform ${
-                  settings.darkMode ? 'translate-x-6' : ''
+                  darkMode ? 'translate-x-6' : ''
                 }`}
               />
             </button>

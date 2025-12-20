@@ -123,6 +123,36 @@ def recuperer_documents_par_categorie(categorie):
             
     return documents
 
+def recuperer_tous_documents():
+    """
+    Récupère TOUS les documents de la base de données, peu importe la catégorie.
+    """
+    conn = None
+    documents = []
+    try:
+        conn = sqlite3.connect(DB_NAME)
+        cursor = conn.cursor()
+
+        select_query = """
+        SELECT id, nom_fichier, chemin_local, categorie, date_ajout 
+        FROM documents
+        ORDER BY date_ajout DESC
+        """
+        
+        cursor.execute(select_query)
+        documents = cursor.fetchall()
+
+        return documents
+
+    except sqlite3.Error as e:
+        print(f"🛑 Erreur lors de la récupération de tous les documents : {e}")
+        return []
+    finally:
+        if conn:
+            conn.close()
+            
+    return documents
+
 def recuperer_4_derniers_documents():
     """
     Récupère les 4 documents les plus récemment ajoutés, quelle que soit leur catégorie.

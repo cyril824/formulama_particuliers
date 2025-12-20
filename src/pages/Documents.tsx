@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Trash2, FileText } from 'lucide-react';
+import { useDocumentContext } from '@/context/DocumentContext';
 
 // CORRECTION CRITIQUE : Utilisation stricte de localhost pour éviter les blocages inter-IP
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'localhost:5001';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001';
 
 // --- INTERFACE MISE À JOUR POUR CORRESPONDRE À LA DB SQLITE ---
 interface DocumentItem {
@@ -26,6 +27,9 @@ const DocumentsPage: React.FC<DocumentsPageProps> = ({ currentCategory, refreshK
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [isDeleting, setIsDeleting] = useState<boolean>(false);
+
+    // Hook pour notifier les changements de documents
+    const { notifyDocumentChange } = useDocumentContext();
 
     // URL de l'API Flask (Port 5001) pour la récupération
     const FETCH_API_URL = `${API_BASE_URL}/api/documents/${currentCategory}`;
@@ -59,7 +63,9 @@ const DocumentsPage: React.FC<DocumentsPageProps> = ({ currentCategory, refreshK
                 console.log(`Document ${docId} supprimé avec succès.`);
                 // 1. Mise à jour immédiate du DOM (pour une sensation de rapidité)
                 setDocuments(prevDocs => prevDocs.filter(doc => doc.id !== docId));
-                // 2. Forcer un rafraîchissement complet (en cas d'erreur de cache)
+                // 2. Notifier que des documents ont changé
+                notifyDocumentChange();
+                // 3. Forcer un rafraîchissement complet (en cas d'erreur de cache)
                 forceRefresh();
             } else {
                 // Tente de lire l'erreur renvoyée par Flask
