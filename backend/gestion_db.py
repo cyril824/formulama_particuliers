@@ -2,8 +2,10 @@ import sqlite3
 import datetime 
 import os
 
-# Chemin vers la base de données (utilise '../data/' pour remonter au dossier formula_vite/data/)
-DB_NAME = '../data/documents.db' 
+# Chemin vers la base de données (chemin absolu pour éviter les problèmes relatifs)
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
+DB_NAME = os.path.join(PROJECT_ROOT, 'data', 'documents.db') 
 
 def supprimer_document(doc_id: int):
     """
