@@ -89,17 +89,18 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({ onUploadSuccess }) => {
     };
 
     return (
-        <div className="bg-white dark:bg-slate-900 rounded-xl p-4 sm:p-8 shadow-lg border border-indigo-100 dark:border-slate-700 space-y-4 w-full max-w-full overflow-hidden">
-            <h2 className="text-lg sm:text-xl font-semibold text-gray-800 dark:text-white flex items-center gap-2">
-                <Upload className="w-5 h-5 text-indigo-600 dark:text-indigo-400 flex-shrink-0" />
+        <div className="bg-white dark:bg-gradient-to-br dark:from-slate-800 dark:via-blue-900/50 dark:to-slate-800 rounded-xl p-4 sm:p-8 shadow-lg dark:shadow-2xl border border-indigo-100 dark:border-blue-800/40 space-y-4 w-full max-w-full overflow-hidden">
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-800 dark:text-blue-100 flex items-center gap-2">
+                <Upload className="w-5 h-5 text-indigo-600 dark:text-blue-400 flex-shrink-0" />
                 <span className="truncate">Télécharger un document</span>
             </h2>
             
             <div className="flex flex-col space-y-4 min-w-0 w-full max-w-full">
                 <div 
-                    className="border-2 border-dashed border-gray-300 dark:border-indigo-500 rounded-lg p-4 sm:p-10 text-center hover:border-indigo-500 dark:hover:border-indigo-400 transition-colors cursor-pointer w-full dark:bg-indigo-950/30"
+                    className="border-2 border-dashed border-indigo-300 dark:border-blue-400/80 rounded-lg p-4 sm:p-10 text-center hover:border-indigo-400 dark:hover:border-blue-300 transition-all duration-300 cursor-pointer w-full bg-blue-50 dark:bg-gradient-to-br dark:from-blue-800/50 dark:via-blue-700/35 dark:to-blue-800/50 dark:hover:from-blue-800/60 dark:hover:via-blue-700/45 dark:hover:to-blue-800/60 relative overflow-hidden group backdrop-blur-sm"
                     onClick={() => document.getElementById('fileInput')?.click()}
                 >
+                    <div className="absolute inset-0 dark:bg-gradient-to-r dark:from-stone-500/0 dark:via-stone-400/15 dark:to-stone-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     <input 
                         type="file" 
                         id="fileInput" 
@@ -107,21 +108,23 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({ onUploadSuccess }) => {
                         className="hidden" 
                         accept="application/pdf, .doc, .docx, image/jpeg, image/png"
                     />
-                    <Upload className="w-6 sm:w-8 h-6 sm:h-8 mx-auto text-gray-400 dark:text-slate-500 mb-2" />
-                    <p className="text-sm sm:text-base text-gray-600 dark:text-slate-300 break-words">
-                        Cliquez pour parcourir vos fichiers et déposez votre document
-                    </p>
-                    <br/>
-                    <span className="text-xs sm:text-sm text-gray-400 dark:text-slate-500">PDF, DOC, DOCX, JPG, PNG (max. 10MB)</span>
+                    <div className="relative z-10">
+                        <Upload className="w-6 sm:w-8 h-6 sm:h-8 mx-auto text-indigo-500 dark:text-blue-300 mb-2 group-hover:text-indigo-600 dark:group-hover:text-blue-400 transition-colors" />
+                        <p className="text-sm sm:text-base text-indigo-700 dark:text-indigo-50 break-words">
+                            Cliquez pour parcourir vos fichiers et déposez votre document
+                        </p>
+                        <br/>
+                        <span className="text-xs sm:text-sm text-indigo-600 dark:text-stone-200">PDF, DOC, DOCX, JPG, PNG (max. 10MB)</span>
+                    </div>
                 </div>
 
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 w-full min-w-0">
                     <div className="flex flex-col sm:flex-row sm:items-center gap-2 min-w-0 flex-1">
-                        <label className="text-xs sm:text-sm font-medium text-gray-700 dark:text-slate-300 whitespace-nowrap flex-shrink-0">Ranger dans :</label>
+                        <label className="text-xs sm:text-sm font-medium text-gray-700 dark:text-blue-100 whitespace-nowrap flex-shrink-0">Ranger dans :</label>
                         <select 
                             value={selectedCategory} 
                             onChange={(e) => setSelectedCategory(e.target.value)}
-                            className="p-2 border border-gray-300 dark:border-slate-600 rounded-md shadow-sm text-xs sm:text-sm w-full min-w-0 max-w-full bg-white dark:bg-slate-800 text-gray-900 dark:text-white"
+                            className="p-2 border border-gray-300 dark:border-blue-700/60 rounded-md shadow-sm text-xs sm:text-sm w-full min-w-0 max-w-full bg-white dark:bg-slate-900 text-gray-900 dark:text-blue-100 dark:hover:border-blue-500/60 transition-colors"
                             disabled={isUploading}
                         >
                             {CATEGORIES.map(cat => (
@@ -133,10 +136,10 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({ onUploadSuccess }) => {
                     <button 
                         onClick={handleUpload}
                         disabled={isUploading || !selectedFile}
-                        className={`px-4 py-2 rounded-md font-semibold text-white transition-colors text-sm flex-shrink-0 whitespace-nowrap ${
+                        className={`px-4 py-2 rounded-md font-semibold text-white transition-all duration-300 text-sm flex-shrink-0 whitespace-nowrap ${
                             (isUploading || !selectedFile) 
-                                ? 'bg-gray-400 dark:bg-slate-700 cursor-not-allowed' 
-                                : 'bg-indigo-600 dark:bg-indigo-700 hover:bg-indigo-700 dark:hover:bg-indigo-600'
+                                ? 'bg-gray-400 dark:bg-slate-700 cursor-not-allowed opacity-60' 
+                                : 'bg-indigo-600 dark:bg-gradient-to-r dark:from-blue-600 dark:to-blue-700 hover:bg-indigo-700 dark:hover:from-blue-500 dark:hover:to-blue-600 shadow-md dark:shadow-lg dark:shadow-blue-900/40'
                         }`}
                     >
                         {isUploading ? 'Enregistrement...' : 'Enregistrer'}
@@ -148,8 +151,8 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({ onUploadSuccess }) => {
             {uploadMessage && (
                 <div className={`mt-3 p-3 rounded-md text-xs sm:text-sm break-words ${
                     uploadMessage.startsWith('✅') 
-                        ? 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300' 
-                        : 'bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300'
+                        ? 'bg-green-100 dark:bg-emerald-900/30 text-green-700 dark:text-emerald-300 border border-green-300 dark:border-emerald-700/50' 
+                        : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 border border-red-300 dark:border-red-700/50'
                 }`}>
                     {uploadMessage}
                 </div>

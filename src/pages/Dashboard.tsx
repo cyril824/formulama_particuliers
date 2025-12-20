@@ -104,7 +104,7 @@ const HomeContent = ({ refreshKey, onDocumentClick }: { refreshKey: number, onDo
       
       <div className="grid gap-3">
         {documents.length === 0 ? (
-          <div className="p-8 text-center text-muted-foreground border border-dashed rounded-lg">
+          <div className="p-8 text-center text-muted-foreground border border-dashed border-indigo-500/30 rounded-lg bg-gradient-to-br from-indigo-950/30 to-slate-900/20">
             Aucun document trouvé. Déposez-en un pour commencer !
           </div>
         ) : (
@@ -116,27 +116,27 @@ const HomeContent = ({ refreshKey, onDocumentClick }: { refreshKey: number, onDo
                 key={doc.id}
                 // Utilise le handler de clic au lieu d'un <a> tag
                 onClick={() => onDocumentClick(doc)}
-                className="bg-card rounded-xl p-4 shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-medium)] transition-all duration-300 animate-in slide-in-from-bottom cursor-pointer w-full max-w-full overflow-hidden"
+                className="bg-card dark:bg-gradient-to-r dark:from-slate-800 dark:via-indigo-900/20 dark:to-slate-800 rounded-xl p-4 shadow-[var(--shadow-soft)] dark:shadow-lg dark:shadow-indigo-900/20 hover:shadow-[var(--shadow-medium)] dark:hover:shadow-indigo-900/30 transition-all duration-300 animate-in slide-in-from-bottom cursor-pointer w-full max-w-full overflow-hidden border border-transparent dark:border-indigo-500/20 dark:hover:border-indigo-500/40 hover:dark:bg-gradient-to-r hover:dark:from-slate-800/80 hover:dark:via-indigo-900/30 hover:dark:to-slate-800/80"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
                 <div className="flex items-start gap-3">
-                  <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <FileText className="w-5 h-5 text-primary" />
+                  <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-primary/10 dark:bg-gradient-to-br dark:from-indigo-600/30 dark:to-indigo-800/40 flex items-center justify-center">
+                    <FileText className="w-5 h-5 text-primary dark:text-indigo-400" />
                   </div>
 
                   <div className="flex-1 min-w-0 w-full max-w-full">
                     <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 sm:gap-3 w-full max-w-full">
                       <div className="flex-1 min-w-0 w-full max-w-full">
-                        <h3 className="font-medium text-foreground break-words text-xs sm:text-base whitespace-normal">
+                        <h3 className="font-medium text-foreground dark:text-indigo-100 break-words text-xs sm:text-base whitespace-normal">
                           {doc.nom_fichier}
                         </h3>
                         {/* Affiche la catégorie si ce n'est pas la catégorie par défaut (pour distinguer les Archivés) */}
                         {doc.categorie !== 'Documents en Cours' && (
-                            <p className="text-xs text-secondary-foreground/70 mt-0.5 truncate">
+                            <p className="text-xs text-secondary-foreground/70 dark:text-indigo-300/60 mt-0.5 truncate">
                                 Classé dans : {doc.categorie}
                             </p>
                         )}
-                        <p className="text-xs text-muted-foreground mt-0.5">
+                        <p className="text-xs text-muted-foreground dark:text-indigo-300/50 mt-0.5">
                           {formatDisplayDate(doc.date_ajout)}
                         </p>
                       </div>
@@ -146,8 +146,8 @@ const HomeContent = ({ refreshKey, onDocumentClick }: { refreshKey: number, onDo
                         variant={signedStatus ? "default" : "destructive"}
                         className={`flex items-center gap-1 transition-all duration-300 flex-shrink-0 text-xs h-fit w-fit ${
                           signedStatus
-                            ? "bg-success hover:bg-success/90"
-                            : "bg-destructive hover:bg-destructive/90"
+                            ? "bg-success hover:bg-success/90 dark:bg-emerald-600/80 dark:hover:bg-emerald-600"
+                            : "bg-destructive hover:bg-destructive/90 dark:bg-red-600/60 dark:hover:bg-red-600/70"
                         }`}
                       >
                         {signedStatus ? (
