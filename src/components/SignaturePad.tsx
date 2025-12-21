@@ -51,24 +51,27 @@ const SignaturePad: React.FC<SignaturePadProps> = ({ onSign, onCancel, documentN
     initializeCanvas();
   }, [blobUrl]);
 
-  // Désactiver le scroll du body quand la modale est ouverte
+  // Gérer l'activation du canvas au clic et le scroll
   useEffect(() => {
     document.body.style.overflow = 'hidden';
     document.documentElement.style.overflow = 'hidden';
-    
-    const handleGlobalMouseUp = () => {
-      setIsDrawing(false);
+
+    const viewer = viewerContainerRef.current;
+    if (!viewer) return;
+
+    // Handler pour le scroll avec la molette
+    const handleWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      viewer.scrollTop += e.deltaY;
     };
 
-    // Ajouter le listener sur le document pour s'assurer qu'on sort du mode dessin
-    document.addEventListener('mouseup', handleGlobalMouseUp);
-    document.addEventListener('touchend', handleGlobalMouseUp);
-    
+    // Attacher le listener wheel au viewer, pas au canvas
+    viewer.addEventListener('wheel', handleWheel, { passive: false });
+
     return () => {
+      viewer.removeEventListener('wheel', handleWheel);
       document.body.style.overflow = 'auto';
       document.documentElement.style.overflow = 'auto';
-      document.removeEventListener('mouseup', handleGlobalMouseUp);
-      document.removeEventListener('touchend', handleGlobalMouseUp);
     };
   }, []);
 
@@ -183,8 +186,8 @@ const SignaturePad: React.FC<SignaturePadProps> = ({ onSign, onCancel, documentN
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-2 sm:p-4">
       <div ref={containerRef} className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-5xl h-[90vh] flex flex-col">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-4 p-4 sm:p-6 border-b border-gray-300 dark:border-slate-700">
+        {/* En-tête */}
+        <div className="flex items-center justify-between mb-4 p-4 sm:p-6 border-b border-gray-300 dark:border-slate-700 flex-shrink-0">
           <div className="flex-1">
             <h2 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white">Signer le document</h2>
             {documentName && (
@@ -200,14 +203,14 @@ const SignaturePad: React.FC<SignaturePadProps> = ({ onSign, onCancel, documentN
         </div>
 
         {/* Instructions */}
-        <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 px-4 sm:px-6 mb-4">
+        <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 px-4 sm:px-6 mb-4 flex-shrink-0">
           Signez sur le document avec votre souris ou votre doigt (en rouge)
         </p>
 
         {/* Document Viewer with Canvas Overlay */}
         <div 
           ref={viewerContainerRef}
-          className="flex-1 relative overflow-y-auto overflow-x-hidden rounded-lg border border-gray-300 dark:border-slate-600 bg-gray-100 dark:bg-slate-900 mx-4 sm:mx-6 mb-4"
+          className="flex-1 relative overflow-y-auto overflow-x-hidden rounded-lg border border-gray-300 dark:border-slate-600 bg-gray-100 dark:bg-slate-900 mx-4 sm:mx-6"
           style={{ minHeight: 0 }}
         >
           {loadError ? (
@@ -237,12 +240,12 @@ const SignaturePad: React.FC<SignaturePadProps> = ({ onSign, onCancel, documentN
                 onTouchStart={startDrawing}
                 onTouchMove={draw}
                 onTouchEnd={stopDrawing}
-                className="absolute top-0 left-0 cursor-crosshair pointer-events-none"
+                className="absolute top-0 left-0 cursor-crosshair"
                 style={{
                   zIndex: 5,
                   opacity: isEmpty ? 0.2 : 1,
                   transition: 'opacity 0.2s',
-                  pointerEvents: isDrawing ? 'auto' : 'none',
+                  pointerEvents: 'auto',
                   width: '100%',
                   height: '100%'
                 }}
@@ -255,37 +258,29 @@ const SignaturePad: React.FC<SignaturePadProps> = ({ onSign, onCancel, documentN
           )}
         </div>
 
-        {/* Buttons - Higher z-index to be above canvas */}
-        <div className="flex gap-2 sm:gap-3 justify-end flex-wrap px-4 sm:px-6 pb-4 sm:pb-6 relative z-20">
-          <button
-            onClick={clearSignature}
-            disabled={isEmpty}
-            className={`px-3 sm:px-4 py-2 rounded-lg font-semibold text-sm transition-colors ${
-              isEmpty
-                ? 'bg-gray-300 dark:bg-slate-700 text-gray-500 dark:text-gray-500 cursor-not-allowed'
-                : 'bg-gray-200 dark:bg-slate-700 text-gray-800 dark:text-white hover:bg-gray-300 dark:hover:bg-slate-600'
-            }`}
-          >
-            Effacer
-          </button>
-          <button
-            onClick={onCancel}
-            className="px-3 sm:px-4 py-2 rounded-lg bg-gray-200 dark:bg-slate-700 text-gray-800 dark:text-white font-semibold hover:bg-gray-300 dark:hover:bg-slate-600 transition-colors text-sm"
-          >
-            Annuler
-          </button>
-          <button
-            onClick={handleValidate}
-            disabled={isEmpty}
-            className={`px-3 sm:px-4 py-2 rounded-lg font-semibold text-sm transition-all ${
-              isEmpty
-                ? 'bg-indigo-300 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 cursor-not-allowed'
-                : 'bg-gradient-to-r from-indigo-500 to-indigo-600 text-white hover:from-indigo-600 hover:to-indigo-700 hover:shadow-lg'
-            }`}
-          >
-            ✓ Valider
-          </button>
-        </div>
+        {/* Buttons - Floating buttons that appear only when there's a signature */}
+        {!isEmpty && (
+          <div className="fixed bottom-6 right-6 flex gap-2 sm:gap-3 z-[9999] pointer-events-auto">
+            <button
+              onClick={clearSignature}
+              className="px-4 sm:px-5 py-2 sm:py-3 rounded-lg font-semibold text-sm bg-gray-200 dark:bg-slate-700 text-gray-800 dark:text-white hover:bg-gray-300 dark:hover:bg-slate-600 transition-colors shadow-lg hover:shadow-xl"
+            >
+              Effacer
+            </button>
+            <button
+              onClick={onCancel}
+              className="px-4 sm:px-5 py-2 sm:py-3 rounded-lg font-semibold text-sm bg-gray-200 dark:bg-slate-700 text-gray-800 dark:text-white hover:bg-gray-300 dark:hover:bg-slate-600 transition-colors shadow-lg hover:shadow-xl"
+            >
+              Annuler
+            </button>
+            <button
+              onClick={handleValidate}
+              className="px-4 sm:px-5 py-2 sm:py-3 rounded-lg font-semibold text-sm bg-gradient-to-r from-indigo-500 to-indigo-600 text-white hover:from-indigo-600 hover:to-indigo-700 transition-all shadow-lg hover:shadow-xl"
+            >
+              ✓ Valider
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
