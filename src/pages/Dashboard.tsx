@@ -41,6 +41,9 @@ const HomeContent = ({ refreshKey, onDocumentClick }: { refreshKey: number, onDo
   const [documents, setDocuments] = useState<Document[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedDoc, setSelectedDoc] = useState<Document | null>(null);
+  const [showContextMenu, setShowContextMenu] = useState(false);
+  const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
 
   // Fonction pour charger les documents récents
   const fetchRecentDocuments = useCallback(async () => {
@@ -80,8 +83,31 @@ const HomeContent = ({ refreshKey, onDocumentClick }: { refreshKey: number, onDo
     }
   };
 
-  // Logique pour simuler l'état "Signé" ou "Pas Signé"
-  const isSigned = (doc: Document) => doc.id % 2 === 0; 
+  // Logique pour simuler l'état "Signé" ou "Non Signé"
+  const isSigned = (doc: Document) => doc.categorie === "Documents supportés"; 
+  
+  const handleSignDocument = async () => {
+    if (!selectedDoc) return;
+    try {
+      // Appel API pour mettre à jour la catégorie en "Signé"
+      // Pour l'instant, on simule juste le changement
+      alert(`Document "${selectedDoc.nom_fichier}" a été signé`);
+      setShowContextMenu(false);
+      setSelectedDoc(null);
+      // Rafraîchir la liste
+      fetchRecentDocuments();
+    } catch (error) {
+      console.error('Erreur:', error);
+    }
+  };
+
+  const handleViewDocument = () => {
+    if (selectedDoc) {
+      onDocumentClick(selectedDoc);
+      setShowContextMenu(false);
+      setSelectedDoc(null);
+    }
+  };
   
   // Affichage de l'état de chargement
   if (isLoading) {
@@ -114,8 +140,15 @@ const HomeContent = ({ refreshKey, onDocumentClick }: { refreshKey: number, onDo
             return (
               <div
                 key={doc.id}
-                // Utilise le handler de clic au lieu d'un <a> tag
-                onClick={() => onDocumentClick(doc)}
+                onClick={(e) => {
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  setMenuPosition({
+                    x: rect.right - 200,
+                    y: rect.top + 10
+                  });
+                  setSelectedDoc(doc);
+                  setShowContextMenu(true);
+                }}
                 className="bg-card dark:bg-gradient-to-r dark:from-slate-800 dark:via-indigo-900/20 dark:to-slate-800 rounded-xl p-4 shadow-[var(--shadow-soft)] dark:shadow-lg dark:shadow-indigo-900/20 hover:shadow-[var(--shadow-medium)] dark:hover:shadow-indigo-900/30 transition-all duration-300 animate-in slide-in-from-bottom cursor-pointer w-full max-w-full overflow-hidden border border-transparent dark:border-indigo-500/20 dark:hover:border-indigo-500/40 hover:dark:bg-gradient-to-r hover:dark:from-slate-800/80 hover:dark:via-indigo-900/30 hover:dark:to-slate-800/80"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
@@ -141,7 +174,7 @@ const HomeContent = ({ refreshKey, onDocumentClick }: { refreshKey: number, onDo
                         </p>
                       </div>
 
-                      {/* Badge pour l'état "Signé" / "Pas Signé" */}
+                      {/* Badge pour l'état "Signé" / "Non Signé" */}
                       <Badge
                         variant={signedStatus ? "default" : "destructive"}
                         className={`flex items-center gap-1 transition-all duration-300 flex-shrink-0 text-xs h-fit w-fit ${
@@ -158,7 +191,7 @@ const HomeContent = ({ refreshKey, onDocumentClick }: { refreshKey: number, onDo
                         ) : (
                           <>
                             <XCircle className="w-3 h-3" />
-                            <span className="hidden sm:inline">Pas Signé</span>
+                            <span className="hidden sm:inline">Non signé</span>
                           </>
                         )}
                       </Badge>
@@ -170,6 +203,51 @@ const HomeContent = ({ refreshKey, onDocumentClick }: { refreshKey: number, onDo
           })
         )}
       </div>
+
+      {/* Menu contextuel - Popup petit */}
+      {showContextMenu && selectedDoc && (
+        <>
+          <div 
+            className="fixed inset-0 z-40" 
+            onClick={() => {
+              setShowContextMenu(false);
+              setSelectedDoc(null);
+            }}
+          />
+          <div 
+            className="fixed z-50 rounded-2xl shadow-2xl border border-border/80 overflow-hidden animate-in fade-in zoom-in-95 duration-200 bg-gradient-to-br from-background via-background to-background/95"
+            style={{
+              left: `${menuPosition.x}px`,
+              top: `${menuPosition.y}px`,
+              transform: 'translateX(-100%)',
+              width: '180px'
+            }}
+          >
+            {/* Boutons avec design horizontal/vertical cleaner */}
+            <div className="flex flex-col p-3 gap-2">
+              <button
+                onClick={handleSignDocument}
+                disabled={isSigned(selectedDoc)}
+                className={`px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2 ${
+                  isSigned(selectedDoc)
+                    ? 'bg-gray-100/50 dark:bg-slate-800/30 text-gray-400 dark:text-gray-600 cursor-not-allowed opacity-60'
+                    : 'bg-gradient-to-r from-indigo-500 to-indigo-600 text-white hover:from-indigo-600 hover:to-indigo-700 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95'
+                }`}
+              >
+                <span>✓</span>
+                <span>Signer</span>
+              </button>
+              <button
+                onClick={handleViewDocument}
+                className="px-4 py-3 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95"
+              >
+                <span>👁️</span>
+                <span>Voir</span>
+              </button>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };

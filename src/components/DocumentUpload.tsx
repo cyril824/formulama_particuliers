@@ -5,7 +5,7 @@ import { useDocumentContext } from '@/context/DocumentContext';
 // Définitions des catégories disponibles (doivent correspondre aux noms dans la BDD)
 const CATEGORIES = [
     "Documents archivés",
-    "Documents supportés", 
+    "Documents supportés",
 ];
 
 // Le composant attend la fonction de rappel pour rafraîchir le dashboard après succès
@@ -135,25 +135,24 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({ onUploadSuccess }) => {
                     </div>
                 </div>
 
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 w-full min-w-0">
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 min-w-0 flex-1">
-                        <label className="text-xs sm:text-sm font-medium text-gray-700 dark:text-blue-100 whitespace-nowrap flex-shrink-0">Ranger dans :</label>
+                <div className="flex flex-col space-y-3 w-full">
+                    <div className="flex flex-col">
+                        <label className="text-sm font-medium text-gray-700 dark:text-indigo-100 mb-2">Ranger dans :</label>
                         <select 
-                            value={selectedCategory} 
+                            value={selectedCategory}
                             onChange={(e) => setSelectedCategory(e.target.value)}
-                            className="p-2 border border-gray-300 dark:border-blue-700/60 rounded-md shadow-sm text-xs sm:text-sm w-full min-w-0 max-w-full bg-white dark:bg-slate-900 text-gray-900 dark:text-blue-100 dark:hover:border-blue-500/60 transition-colors"
-                            disabled={isUploading}
+                            className="px-3 py-2 rounded-md bg-white dark:bg-slate-700 text-gray-800 dark:text-white border border-indigo-300 dark:border-blue-400/50 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-blue-400 transition-all"
                         >
-                            {CATEGORIES.map(cat => (
+                            {CATEGORIES.map((cat) => (
                                 <option key={cat} value={cat}>{cat}</option>
                             ))}
                         </select>
                     </div>
-                    
+
                     <button 
                         onClick={handleUpload}
                         disabled={isUploading || !selectedFile}
-                        className={`px-4 py-2 rounded-md font-semibold text-white transition-all duration-300 text-sm flex-shrink-0 whitespace-nowrap ${
+                        className={`px-4 py-2 rounded-md font-semibold text-white transition-all duration-300 text-sm w-full ${
                             (isUploading || !selectedFile) 
                                 ? 'bg-gray-400 dark:bg-slate-700 cursor-not-allowed opacity-60' 
                                 : 'bg-indigo-600 dark:bg-gradient-to-r dark:from-blue-600 dark:to-blue-700 hover:bg-indigo-700 dark:hover:from-blue-500 dark:hover:to-blue-600 shadow-md dark:shadow-lg dark:shadow-blue-900/40'
