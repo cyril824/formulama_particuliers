@@ -186,12 +186,12 @@ const HomeContent = ({ refreshKey, onDocumentClick }: { refreshKey: number, onDo
                         {signedStatus ? (
                           <>
                             <CheckCircle2 className="w-3 h-3" />
-                            <span className="hidden sm:inline">Signé</span>
+                            <span>Signé</span>
                           </>
                         ) : (
                           <>
                             <XCircle className="w-3 h-3" />
-                            <span className="hidden sm:inline">Non signé</span>
+                            <span>Non signé</span>
                           </>
                         )}
                       </Badge>
@@ -220,15 +220,17 @@ const HomeContent = ({ refreshKey, onDocumentClick }: { refreshKey: number, onDo
               left: `${menuPosition.x}px`,
               top: `${menuPosition.y}px`,
               transform: 'translateX(-100%)',
-              width: '180px'
+              width: 'auto',
+              minWidth: '160px',
+              maxWidth: 'calc(100vw - 20px)'
             }}
           >
             {/* Boutons avec design horizontal/vertical cleaner */}
-            <div className="flex flex-col p-3 gap-2">
+            <div className="flex flex-col p-2 sm:p-3 gap-1 sm:gap-2">
               <button
                 onClick={handleSignDocument}
                 disabled={isSigned(selectedDoc)}
-                className={`px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2 ${
+                className={`px-3 sm:px-4 py-2 sm:py-3 rounded-lg sm:rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-1 sm:gap-2 whitespace-nowrap ${
                   isSigned(selectedDoc)
                     ? 'bg-gray-100/50 dark:bg-slate-800/30 text-gray-400 dark:text-gray-600 cursor-not-allowed opacity-60'
                     : 'bg-gradient-to-r from-indigo-500 to-indigo-600 text-white hover:from-indigo-600 hover:to-indigo-700 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95'
@@ -239,7 +241,7 @@ const HomeContent = ({ refreshKey, onDocumentClick }: { refreshKey: number, onDo
               </button>
               <button
                 onClick={handleViewDocument}
-                className="px-4 py-3 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95"
+                className="px-3 sm:px-4 py-2 sm:py-3 rounded-lg sm:rounded-xl text-xs sm:text-sm font-semibold text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 transition-all duration-200 flex items-center justify-center gap-1 sm:gap-2 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 whitespace-nowrap"
               >
                 <span>👁️</span>
                 <span>Voir</span>
