@@ -143,11 +143,8 @@ const Settings = () => {
 
         {/* Actions */}
         <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
-          <Button onClick={() => navigate("/dashboard")} className="w-full sm:flex-1">
-            Retour au Dashboard
-          </Button>
-          <Button variant="outline" onClick={() => navigate("/profile")} className="w-full sm:flex-1">
-            Voir le profil
+          <Button onClick={() => navigate("/dashboard")} className="w-full">
+            Retour à l'accueil
           </Button>
         </div>
       </main>
