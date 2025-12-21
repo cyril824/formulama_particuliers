@@ -46,9 +46,24 @@ const Settings = () => {
     navigate("/");
   };
 
-  const handleDeleteAllDocuments = () => {
-    alert("Tous les documents ont été supprimés");
-    setShowDeleteModal(false);
+  const handleDeleteAllDocuments = async () => {
+    try {
+      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001';
+      const response = await fetch(`${API_BASE_URL}/api/documents`, {
+        method: 'DELETE',
+      });
+      
+      if (response.ok) {
+        alert("Tous les documents ont été supprimés avec succès");
+        setShowDeleteModal(false);
+      } else {
+        const error = await response.json();
+        alert(`Erreur : ${error.error || 'Impossible de supprimer les documents'}`);
+      }
+    } catch (error) {
+      console.error('Erreur lors de la suppression:', error);
+      alert("Erreur de connexion au serveur");
+    }
   };
 
   return (

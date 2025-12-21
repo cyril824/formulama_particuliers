@@ -133,6 +133,7 @@ def recuperer_tous_documents():
     documents = []
     try:
         conn = sqlite3.connect(DB_NAME)
+        conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
 
         select_query = """
@@ -142,7 +143,7 @@ def recuperer_tous_documents():
         """
         
         cursor.execute(select_query)
-        documents = cursor.fetchall()
+        documents = [dict(row) for row in cursor.fetchall()]
 
         return documents
 

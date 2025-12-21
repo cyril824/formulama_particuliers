@@ -154,7 +154,28 @@ def api_supprimer_document(doc_id):
     else:
         return jsonify({"error": f"Impossible de supprimer le document ID {doc_id}. Introuvable ou erreur interne."}), 404
 
-# 6. Lancement du serveur
+# 6. Endpoint pour supprimer tous les documents (Méthode DELETE)
+@app.route('/api/documents', methods=['DELETE'])
+def api_supprimer_tous_documents():
+    try:
+        # Récupérer tous les documents
+        from gestion_db import recuperer_tous_documents, supprimer_document
+        documents = recuperer_tous_documents()
+        
+        # Supprimer chaque fichier du dossier /data
+        for doc in documents:
+            file_path = os.path.join(DATA_FOLDER_PATH, doc.get('nom_fichier'))
+            if os.path.exists(file_path):
+                os.remove(file_path)
+            # Supprimer de la base de données
+            supprimer_document(doc.get('id'))
+        
+        return jsonify({"message": "Tous les documents ont été supprimés"}), 200
+    except Exception as e:
+        print(f"Erreur lors de la suppression de tous les documents: {e}")
+        return jsonify({"error": f"Erreur lors de la suppression: {e}"}), 500
+
+# 7. Lancement du serveur
 if __name__ == '__main__':
     initialiser_base_de_donnees()
     print(f"\n[INFO] Dossier de documents configuré : {DATA_FOLDER_PATH}\n")
