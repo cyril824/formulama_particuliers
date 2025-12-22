@@ -6,7 +6,7 @@ from werkzeug.utils import secure_filename
 import urllib.parse 
 
 # Importe toutes les fonctions nécessaires
-from gestion_db import ajouter_document, recuperer_documents_par_categorie, supprimer_document, initialiser_base_de_donnees, recuperer_4_derniers_documents, diagnostiquer_fichiers_locaux, recuperer_tous_documents, recuperer_document_par_id 
+from gestion_db import ajouter_document, recuperer_documents_par_categorie, supprimer_document, initialiser_base_de_donnees, recuperer_4_derniers_documents, diagnostiquer_fichiers_locaux, recuperer_tous_documents, recuperer_document_par_id, marquer_document_signe 
 
 # 1. Configuration de l'application Flask
 app = Flask(__name__)
@@ -146,7 +146,19 @@ def api_ouvrir_document(filename):
         return jsonify({"error": f"Erreur interne du serveur lors de l'ouverture: {e}"}), 500
 
 
-# 5. Endpoint pour supprimer un document (Méthode DELETE)
+# 5. Endpoint pour marquer un document comme signé (Méthode PUT)
+@app.route('/api/documents/<int:doc_id>/sign', methods=['PUT'])
+def api_marquer_document_signe(doc_id):
+    try:
+        if marquer_document_signe(doc_id):
+            return jsonify({"message": f"Document ID {doc_id} marqué comme signé."}), 200
+        else:
+            return jsonify({"error": f"Impossible de mettre à jour le document ID {doc_id}."}), 404
+    except Exception as e:
+        print(f"Erreur lors de la signature du document: {e}")
+        return jsonify({"error": "Erreur interne du serveur"}), 500
+
+# 6. Endpoint pour supprimer un document (Méthode DELETE)
 @app.route('/api/documents/<int:doc_id>', methods=['DELETE'])
 def api_supprimer_document(doc_id):
     if supprimer_document(doc_id):
@@ -154,7 +166,7 @@ def api_supprimer_document(doc_id):
     else:
         return jsonify({"error": f"Impossible de supprimer le document ID {doc_id}. Introuvable ou erreur interne."}), 404
 
-# 6. Endpoint pour supprimer tous les documents (Méthode DELETE)
+# 7. Endpoint pour supprimer tous les documents (Méthode DELETE)
 @app.route('/api/documents', methods=['DELETE'])
 def api_supprimer_tous_documents():
     try:

@@ -48,17 +48,47 @@ def initialiser_base_de_donnees():
             nom_fichier TEXT NOT NULL,
             chemin_local TEXT NOT NULL,
             categorie TEXT NOT NULL,
-            date_ajout DATETIME
+            date_ajout DATETIME,
+            is_signed BOOLEAN DEFAULT 0
         );
         """
         cursor.execute(creation_table_query)
         conn.commit()
+        
+        # Ajouter la colonne is_signed si elle n'existe pas
+        cursor.execute("PRAGMA table_info(documents)")
+        columns = [column[1] for column in cursor.fetchall()]
+        if 'is_signed' not in columns:
+            cursor.execute("ALTER TABLE documents ADD COLUMN is_signed BOOLEAN DEFAULT 0")
+            conn.commit()
+            print("✅ Colonne 'is_signed' ajoutée à la table 'documents'.")
+        
         print(f"✅ Base de données '{DB_NAME}' initialisée avec succès.")
 
     except sqlite3.Error as e:
         print(f"🛑 Erreur lors de l'initialisation de la base de données : {e}")
     except Exception as e:
         print(f"🛑 Erreur système lors de l'initialisation : {e}")
+    finally:
+        if conn:
+            conn.close()
+
+def marquer_document_signe(doc_id: int):
+    """Marque un document comme signé."""
+    conn = None
+    try:
+        conn = sqlite3.connect(DB_NAME)
+        cursor = conn.cursor()
+        
+        update_query = "UPDATE documents SET is_signed = 1 WHERE id = ?"
+        cursor.execute(update_query, (doc_id,))
+        conn.commit()
+        
+        return cursor.rowcount > 0
+    
+    except sqlite3.Error as e:
+        print(f"🛑 Erreur lors de la mise à jour du document ID {doc_id} : {e}")
+        return False
     finally:
         if conn:
             conn.close()
@@ -106,7 +136,7 @@ def recuperer_documents_par_categorie(categorie):
         cursor = conn.cursor()
 
         select_query = """
-        SELECT id, nom_fichier, chemin_local, date_ajout 
+        SELECT id, nom_fichier, chemin_local, categorie, date_ajout, is_signed
         FROM documents
         WHERE categorie = ?
         ORDER BY date_ajout DESC
@@ -134,7 +164,7 @@ def recuperer_document_par_id(doc_id):
         cursor = conn.cursor()
 
         select_query = """
-        SELECT id, nom_fichier, chemin_local, categorie, date_ajout 
+        SELECT id, nom_fichier, chemin_local, categorie, date_ajout, is_signed
         FROM documents
         WHERE id = ?
         """
@@ -166,7 +196,7 @@ def recuperer_tous_documents():
         cursor = conn.cursor()
 
         select_query = """
-        SELECT id, nom_fichier, chemin_local, categorie, date_ajout
+        SELECT id, nom_fichier, chemin_local, categorie, date_ajout, is_signed
         FROM documents
         ORDER BY date_ajout DESC
         """
@@ -199,7 +229,7 @@ def recuperer_4_derniers_documents():
         cursor = conn.cursor()
 
         select_query = """
-        SELECT id, nom_fichier, chemin_local, categorie, date_ajout 
+        SELECT id, nom_fichier, chemin_local, categorie, date_ajout, is_signed
         FROM documents
         ORDER BY date_ajout DESC
         LIMIT 4

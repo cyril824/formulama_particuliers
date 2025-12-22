@@ -32,6 +32,7 @@ interface Document {
   chemin_local: string;
   categorie: string; // Utilisé pour afficher si c'est "archivé" ou autre
   date_ajout: string; // La date au format chaîne (ex: "2025-11-27 10:30:00")
+  is_signed?: boolean | number; // Peut être true/false ou 0/1 de SQLite
 }
 
 // CORRECTION CRITIQUE : Utilisation stricte de localhost pour éviter les blocages inter-IP
@@ -87,7 +88,7 @@ const HomeContent = ({ refreshKey, onDocumentClick }: { refreshKey: number, onDo
 
   // Logique pour simuler l'état "Signé" ou "Non Signé"
   // Par défaut, tous les documents sont "Non signé" quand ils sont ajoutés
-  const isSigned = (doc: Document) => false; 
+  const isSigned = (doc: Document) => doc.is_signed === true || doc.is_signed === 1; 
   
   const handleSignDocument = async () => {
     if (!selectedDoc) return;
@@ -98,15 +99,27 @@ const HomeContent = ({ refreshKey, onDocumentClick }: { refreshKey: number, onDo
   const handleSignatureComplete = async (signatureData: string) => {
     if (!selectedDoc) return;
     try {
-      // Pour l'instant, on simule juste le changement
+      // Appeler l'API pour marquer le document comme signé
+      const response = await fetch(`${API_BASE_URL}/api/documents/${selectedDoc.id}/sign`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Erreur lors de la mise à jour du document');
+      }
+
       console.log('Signature complétée:', signatureData);
-      alert(`Document "${selectedDoc.nom_fichier}" a été signé`);
+      alert(`Document "${selectedDoc.nom_fichier}" a été signé avec succès!`);
       setShowSignaturePad(false);
       setSelectedDoc(null);
       // Rafraîchir la liste
       fetchRecentDocuments();
     } catch (error) {
       console.error('Erreur:', error);
+      alert('Erreur lors de la signature du document');
     }
   };
 
