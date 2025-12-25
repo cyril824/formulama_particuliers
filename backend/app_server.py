@@ -5,6 +5,7 @@ import os
 from werkzeug.utils import secure_filename 
 import urllib.parse
 import base64 
+import ssl
 
 # Importe toutes les fonctions nécessaires
 from gestion_db import ajouter_document, recuperer_documents_par_categorie, supprimer_document, initialiser_base_de_donnees, recuperer_4_derniers_documents, diagnostiquer_fichiers_locaux, recuperer_tous_documents, recuperer_document_par_id, marquer_document_signe 
@@ -292,4 +293,5 @@ def serve_document_file(filename):
 if __name__ == '__main__':
     initialiser_base_de_donnees()
     print(f"\n[INFO] Dossier de documents configuré : {DATA_FOLDER_PATH}\n")
+    # Lancement du serveur Flask sur le port 5001
     app.run(debug=True, host="0.0.0.0", port=5001)
