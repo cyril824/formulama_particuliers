@@ -339,7 +339,7 @@ const Profile = () => {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     <div>
                       <label className="text-xs sm:text-sm font-medium text-muted-foreground mb-1 block">Civilité</label>
-                      <select value={editedData.civilite} onChange={(e) => handleInputChange("civilite", e.target.value)} className="w-full px-3 py-2 border rounded text-sm">
+                      <select value={editedData.civilite} onChange={(e) => handleInputChange("civilite", e.target.value)} className="w-full px-3 py-2 border rounded text-sm text-foreground bg-background dark:bg-background dark:text-foreground">
                         <option value="M">M.</option>
                         <option value="Mme">Mme</option>
                         <option value="Mlle">Mlle</option>
@@ -392,7 +392,7 @@ const Profile = () => {
                             });
                           }
                         }} 
-                        className="w-full px-3 py-2 border rounded text-sm"
+                        className="w-full px-3 py-2 border rounded text-sm text-foreground bg-background dark:bg-background dark:text-foreground"
                       >
                         <option value="">Sélectionner une ville...</option>
                         <option value="Paris|75000">Paris (75000)</option>
@@ -429,7 +429,7 @@ const Profile = () => {
                     </div>
                     <div>
                       <label className="text-xs sm:text-sm font-medium text-muted-foreground mb-1 block">Situation familiale</label>
-                      <select value={editedData.situation} onChange={(e) => handleInputChange("situation", e.target.value)} className="w-full px-3 py-2 border rounded text-sm">
+                      <select value={editedData.situation} onChange={(e) => handleInputChange("situation", e.target.value)} className="w-full px-3 py-2 border rounded text-sm text-foreground bg-background dark:bg-background dark:text-foreground">
                         <option value="Célibataire">Célibataire</option>
                         <option value="Marié(e)">Marié(e)</option>
                         <option value="Pacsé(e)">Pacsé(e)</option>
@@ -452,7 +452,7 @@ const Profile = () => {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     <div>
                       <label className="text-xs sm:text-sm font-medium text-muted-foreground mb-1 block">Type de document</label>
-                      <select value={editedData.typeDocument} onChange={(e) => handleInputChange("typeDocument", e.target.value)} className="w-full px-3 py-2 border rounded text-sm">
+                      <select value={editedData.typeDocument} onChange={(e) => handleInputChange("typeDocument", e.target.value)} className="w-full px-3 py-2 border rounded text-sm text-foreground bg-background dark:bg-background dark:text-foreground">
                         <option value="Passeport">Passeport</option>
                         <option value="Carte nationale">Carte nationale</option>
                         <option value="Permis de conduire">Permis de conduire</option>
@@ -683,7 +683,7 @@ const Profile = () => {
                               newVehicules[index].carburant = e.target.value;
                               setEditedData({ ...editedData, vehicules: newVehicules });
                             }}
-                            className="w-full px-3 py-2 border rounded text-sm"
+                            className="w-full px-3 py-2 border rounded text-sm text-foreground bg-background dark:bg-background dark:text-foreground"
                           >
                             <option value="">Sélectionnez...</option>
                             <option value="Essence">Essence</option>
@@ -732,7 +732,7 @@ const Profile = () => {
                     </div>
                     <div>
                       <label className="text-xs sm:text-sm font-medium text-muted-foreground mb-1 block">Type de contrat</label>
-                      <select value={editedData.typeContrat} onChange={(e) => handleInputChange("typeContrat", e.target.value)} className="w-full px-3 py-2 border rounded text-sm">
+                      <select value={editedData.typeContrat} onChange={(e) => handleInputChange("typeContrat", e.target.value)} className="w-full px-3 py-2 border rounded text-sm text-foreground bg-background dark:bg-background dark:text-foreground">
                         <option value="CDI">CDI</option>
                         <option value="CDD">CDD</option>
                         <option value="Stage">Stage</option>
@@ -833,7 +833,7 @@ const Profile = () => {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mt-3">
                     <div>
                       <label className="text-xs sm:text-sm font-medium text-muted-foreground mb-1 block">Groupe sanguin</label>
-                      <select value={editedData.groupeSanguin} onChange={(e) => handleInputChange("groupeSanguin", e.target.value)} className="w-full px-3 py-2 border rounded text-sm">
+                      <select value={editedData.groupeSanguin} onChange={(e) => handleInputChange("groupeSanguin", e.target.value)} className="w-full px-3 py-2 border rounded text-sm text-foreground bg-background dark:bg-background dark:text-foreground">
                         <option value="O+">O+</option>
                         <option value="O-">O-</option>
                         <option value="A+">A+</option>
