@@ -24,7 +24,7 @@ const Login = () => {
       <div className="absolute top-4 left-4">
         <Button
           variant="outline"
-          onClick={() => window.location.href = 'http://localhost:8000/acceuil/acceuil.html'}
+          onClick={() => window.location.href = 'http://localhost:5000/'}
           className="gap-2 text-primary hover:bg-primary/10 hover:border-primary/20"
         >
           <ArrowLeft className="w-4 h-4" />
