@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
+import { ArrowLeft } from "lucide-react";
 import formulamaLogo from "@/assets/formulama_logo.png";
 
 const Login = () => {
@@ -19,6 +20,18 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-secondary/30 to-accent px-4">
+      {/* Bouton Retour au site en haut à gauche */}
+      <div className="absolute top-4 left-4">
+        <Button
+          variant="outline"
+          onClick={() => window.location.href = 'http://localhost:8000/acceuil/acceuil.html'}
+          className="gap-2 text-primary hover:bg-primary/10 hover:border-primary/20"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Retour au site
+        </Button>
+      </div>
+
       <div className="w-full max-w-md">
         <div className="text-center mb-8 animate-in fade-in duration-700">
           <div className="inline-flex items-center justify-center mb-6">
