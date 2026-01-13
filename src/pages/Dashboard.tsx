@@ -315,69 +315,67 @@ const HomeContent = ({ refreshKey, onDocumentClick }: { refreshKey: number, onDo
         )}
       </div>
 
-      {/* Menu contextuel - Popup petit */}
+      {/* Menu contextuel - Popup Compact 2x2 */}
       {showContextMenu && selectedDoc && (
         <>
           <div 
-            className="fixed inset-0 z-40" 
+            className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200" 
             onClick={() => {
               setShowContextMenu(false);
               setSelectedDoc(null);
             }}
           />
           <div 
-            className="fixed z-50 rounded-xl shadow-2xl border border-indigo-200/30 dark:border-indigo-500/30 overflow-hidden animate-in fade-in zoom-in-95 duration-200 bg-white dark:bg-slate-900"
-            style={{
-              left: `${Math.min(menuPosition.x, window.innerWidth - 280)}px`,
-              top: `${Math.min(menuPosition.y, window.innerHeight - 250)}px`,
-              transform: `translate(${menuPosition.x > window.innerWidth - 280 ? '-100%' : '0'}, 0)`,
-              width: '280px',
-              maxWidth: 'calc(100vw - 30px)'
-            }}
+            className="fixed z-50 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-2xl shadow-2xl border border-gray-200 dark:border-slate-700 overflow-hidden animate-in fade-in zoom-in-95 duration-200 bg-white dark:bg-slate-800 w-full max-w-md"
           >
-            {/* En-tête avec nom du document */}
-            <div className="bg-gradient-to-r from-indigo-50 to-indigo-100 dark:from-indigo-950/40 dark:to-slate-900 px-4 py-3 border-b border-indigo-200/30 dark:border-indigo-500/20">
-              <h3 className="font-semibold text-gray-900 dark:text-indigo-100 text-sm truncate">
+            {/* Header */}
+            <div className="px-6 py-5 border-b border-gray-200 dark:border-slate-700 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-slate-800 dark:to-slate-700">
+              <h3 className="font-semibold text-gray-900 dark:text-white truncate text-base">
                 {selectedDoc.nom_fichier}
               </h3>
-              <p className="text-xs text-gray-600 dark:text-indigo-300/70 mt-1">
-                Que souhaitez-vous faire ?
-              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1.5">Sélectionnez une action</p>
             </div>
 
-            {/* Boutons en grille 2x2 */}
-            <div className="grid grid-cols-2 p-4 gap-3">
+            {/* Grille 2x2 */}
+            <div className="p-6 grid grid-cols-2 gap-4">
+              {/* Signer - Bleu */}
               <button
                 onClick={handleSignDocument}
                 disabled={isSigned(selectedDoc)}
-                className={`py-3 px-2 rounded-lg font-semibold transition-all duration-200 flex flex-col items-center justify-center gap-1 ${
+                className={`relative px-3 py-4 rounded-xl font-medium transition-all duration-200 flex flex-col items-center gap-2.5 ${
                   isSigned(selectedDoc)
-                    ? 'bg-gray-100 dark:bg-slate-800 text-gray-400 dark:text-gray-600 cursor-not-allowed'
-                    : 'bg-slate-600 hover:bg-slate-700 text-white shadow-md hover:shadow-lg hover:scale-105 active:scale-95'
+                    ? 'bg-gray-100 dark:bg-slate-700/50 text-gray-400 dark:text-gray-600 cursor-not-allowed'
+                    : 'bg-sky-50 dark:bg-sky-900/20 text-sky-900 dark:text-sky-200 border border-sky-200 dark:border-sky-800 hover:bg-sky-100 dark:hover:bg-sky-900/30 hover:border-sky-300 dark:hover:border-sky-700'
                 }`}
               >
-                <span className="text-xl">✓</span>
-                <span className="text-xs font-medium">Signer</span>
+                <span className="text-2xl">✓</span>
+                <span className="text-sm font-semibold leading-tight">Signer</span>
               </button>
+
+              {/* Remplir - Vert */}
               <button
                 onClick={handleFillDocument}
                 disabled={isFilled(selectedDoc)}
-                className={`py-3 px-2 rounded-lg font-semibold transition-all duration-200 flex flex-col items-center justify-center gap-1 ${
+                className={`relative px-3 py-4 rounded-xl font-medium transition-all duration-200 flex flex-col items-center gap-2.5 ${
                   isFilled(selectedDoc)
-                    ? 'bg-gray-100 dark:bg-slate-800 text-gray-400 dark:text-gray-600 cursor-not-allowed'
-                    : 'bg-slate-600 hover:bg-slate-700 text-white shadow-md hover:shadow-lg hover:scale-105 active:scale-95'
+                    ? 'bg-gray-100 dark:bg-slate-700/50 text-gray-400 dark:text-gray-600 cursor-not-allowed'
+                    : 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-900 dark:text-emerald-200 border border-emerald-200 dark:border-emerald-800 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 hover:border-emerald-300 dark:hover:border-emerald-700'
                 }`}
               >
-                <span className="text-xl">📝</span>
-                <span className="text-xs font-medium">Remplir</span>
+                <span className="text-2xl">📝</span>
+                <span className="text-sm font-semibold leading-tight">Remplir</span>
               </button>
+
+              {/* Voir - Pourpre */}
               <button
                 onClick={handleViewDocument}
-                className="py-3 px-2 rounded-lg font-semibold text-white bg-slate-600 hover:bg-slate-700 transition-all duration-200 flex flex-col items-center justify-center gap-1 shadow-md hover:shadow-lg hover:scale-105 active:scale-95"
+                className="relative px-3 py-4 rounded-xl font-medium transition-all duration-200 flex flex-col items-center gap-2.5 bg-violet-50 dark:bg-violet-900/20 text-violet-900 dark:text-violet-200 border border-violet-200 dark:border-violet-800 hover:bg-violet-100 dark:hover:bg-violet-900/30 hover:border-violet-300 dark:hover:border-violet-700"
               >
-                <span className="text-xl">👁️</span>
-                <span className="text-xs font-medium">Voir</span>
+                <span className="text-2xl">👁️</span>
+                <span className="text-sm font-semibold leading-tight">Voir</span>
               </button>
+
+              {/* Supprimer - Rose */}
               <button
                 onClick={(e) => {
                     e.stopPropagation();
@@ -385,10 +383,10 @@ const HomeContent = ({ refreshKey, onDocumentClick }: { refreshKey: number, onDo
                     setShowContextMenu(false);
                     setSelectedDoc(null);
                 }}
-                className="py-3 px-2 rounded-lg font-semibold text-white bg-slate-600 hover:bg-slate-700 transition-all duration-200 flex flex-col items-center justify-center gap-1 shadow-md hover:shadow-lg hover:scale-105 active:scale-95"
+                className="relative px-3 py-4 rounded-xl font-medium transition-all duration-200 flex flex-col items-center gap-2.5 bg-rose-50 dark:bg-rose-900/20 text-rose-900 dark:text-rose-200 border border-rose-200 dark:border-rose-800 hover:bg-rose-100 dark:hover:bg-rose-900/30 hover:border-rose-300 dark:hover:border-rose-700"
               >
-                <span className="text-xl">🗑️</span>
-                <span className="text-xs font-medium">Supprimer</span>
+                <span className="text-2xl">🗑️</span>
+                <span className="text-sm font-semibold leading-tight">Supprimer</span>
               </button>
             </div>
           </div>
