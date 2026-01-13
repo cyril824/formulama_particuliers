@@ -321,21 +321,6 @@ const DocumentsPage: React.FC<DocumentsPageProps> = ({ currentCategory, refreshK
                                         </div>
                                     </div>
                                 </div>
-
-                                {/* Bouton de suppression */}
-                                <div className="flex justify-end mt-3">
-                                    <button
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleDelete(doc.id, doc.nom_fichier);
-                                        }}
-                                        disabled={isDeleting}
-                                        title={`Supprimer ${doc.nom_fichier}`}
-                                        className={`text-red-500 dark:text-red-400 p-2 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors flex-shrink-0 ${isDeleting ? 'opacity-50 cursor-not-allowed' : ''}`}
-                                    >
-                                        <Trash2 className="w-5 h-5" />
-                                    </button>
-                                </div>
                             </div>
                         );
                     })
@@ -346,7 +331,7 @@ const DocumentsPage: React.FC<DocumentsPageProps> = ({ currentCategory, refreshK
                 )}
             </div>
 
-            {/* Menu contextuel - Popup petit */}
+            {/* Menu contextuel - Popup avec grille */}
             {showContextMenu && selectedDoc && (
                 <>
                     <div 
@@ -357,57 +342,69 @@ const DocumentsPage: React.FC<DocumentsPageProps> = ({ currentCategory, refreshK
                         }}
                     />
                     <div 
-                        className="fixed z-50 rounded-xl shadow-2xl border border-indigo-200/30 dark:border-indigo-500/30 overflow-hidden animate-in fade-in zoom-in-95 duration-200 bg-white dark:bg-slate-900"
+                        className="fixed z-50 rounded-2xl shadow-2xl border border-indigo-200/30 dark:border-indigo-500/30 overflow-hidden animate-in fade-in zoom-in-95 duration-200 bg-white dark:bg-slate-900"
                         style={{
-                            left: `${Math.min(menuPosition.x, window.innerWidth - 280)}px`,
-                            top: `${Math.min(menuPosition.y, window.innerHeight - 250)}px`,
-                            transform: `translate(${menuPosition.x > window.innerWidth - 280 ? '-100%' : '0'}, 0)`,
-                            width: '280px',
+                            left: `${Math.min(menuPosition.x, window.innerWidth - 320)}px`,
+                            top: `${Math.min(menuPosition.y, window.innerHeight - 280)}px`,
+                            transform: `translate(${menuPosition.x > window.innerWidth - 320 ? '-100%' : '0'}, 0)`,
+                            width: '320px',
                             maxWidth: 'calc(100vw - 30px)'
                         }}
                     >
                         {/* En-tête avec nom du document */}
-                        <div className="bg-gradient-to-r from-indigo-50 to-indigo-100 dark:from-indigo-950/40 dark:to-slate-900 px-4 py-3 border-b border-indigo-200/30 dark:border-indigo-500/20">
-                            <h3 className="font-semibold text-gray-900 dark:text-indigo-100 text-sm truncate">
+                        <div className="bg-gradient-to-r from-indigo-50 to-indigo-100 dark:from-indigo-950/40 dark:to-slate-900 px-5 py-4 border-b border-indigo-200/30 dark:border-indigo-500/20">
+                            <h3 className="font-bold text-gray-900 dark:text-indigo-100 text-base truncate">
                                 {selectedDoc.nom_fichier}
                             </h3>
-                            <p className="text-xs text-gray-600 dark:text-indigo-300/70 mt-1">
+                            <p className="text-xs text-gray-600 dark:text-indigo-300/70 mt-2">
                                 Que souhaitez-vous faire ?
                             </p>
                         </div>
 
-                        {/* Boutons */}
-                        <div className="flex flex-col p-4 gap-3">
+                        {/* Boutons en grille 2x2 */}
+                        <div className="grid grid-cols-2 p-5 gap-3">
                             <button
                                 onClick={handleSignDocument}
                                 disabled={isSigned(selectedDoc)}
-                                className={`px-4 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2 whitespace-nowrap ${
+                                className={`py-4 px-3 rounded-lg font-semibold transition-all duration-200 flex flex-col items-center justify-center gap-2 ${
                                     isSigned(selectedDoc)
                                         ? 'bg-gray-100 dark:bg-slate-800 text-gray-400 dark:text-gray-600 cursor-not-allowed'
-                                        : 'bg-indigo-500 hover:bg-indigo-600 text-white shadow-md hover:shadow-lg hover:scale-105 active:scale-95'
+                                        : 'bg-slate-600 hover:bg-slate-700 text-white shadow-md hover:shadow-lg hover:scale-105 active:scale-95'
                                 }`}
                             >
-                                <span>✓</span>
-                                <span>Signer</span>
+                                <span className="text-2xl">✓</span>
+                                <span className="text-xs font-medium">Signer</span>
                             </button>
                             <button
                                 onClick={handleFillDocument}
                                 disabled={isFilled(selectedDoc)}
-                                className={`px-4 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2 whitespace-nowrap ${
+                                className={`py-4 px-3 rounded-lg font-semibold transition-all duration-200 flex flex-col items-center justify-center gap-2 ${
                                     isFilled(selectedDoc)
                                         ? 'bg-gray-100 dark:bg-slate-800 text-gray-400 dark:text-gray-600 cursor-not-allowed'
-                                        : 'bg-purple-500 hover:bg-purple-600 text-white shadow-md hover:shadow-lg hover:scale-105 active:scale-95'
+                                        : 'bg-slate-600 hover:bg-slate-700 text-white shadow-md hover:shadow-lg hover:scale-105 active:scale-95'
                                 }`}
                             >
-                                <span>📝</span>
-                                <span>Remplir</span>
+                                <span className="text-2xl">📝</span>
+                                <span className="text-xs font-medium">Remplir</span>
                             </button>
                             <button
                                 onClick={handleViewDocument}
-                                className="px-4 py-2.5 rounded-lg text-sm font-semibold text-white bg-blue-500 hover:bg-blue-600 transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-lg hover:scale-105 active:scale-95 whitespace-nowrap"
+                                className="py-4 px-3 rounded-lg font-semibold text-white bg-slate-600 hover:bg-slate-700 transition-all duration-200 flex flex-col items-center justify-center gap-2 shadow-md hover:shadow-lg hover:scale-105 active:scale-95"
                             >
-                                <span>👁️</span>
-                                <span>Voir</span>
+                                <span className="text-2xl">👁️</span>
+                                <span className="text-xs font-medium">Voir</span>
+                            </button>
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDelete(selectedDoc.id, selectedDoc.nom_fichier);
+                                    setShowContextMenu(false);
+                                    setSelectedDoc(null);
+                                }}
+                                className="py-4 px-3 rounded-lg font-semibold text-white bg-slate-600 hover:bg-slate-700 transition-all duration-200 flex flex-col items-center justify-center gap-2 shadow-md hover:shadow-lg hover:scale-105 active:scale-95"
+                            >
+                                <span className="text-2xl">🗑️</span>
+                                <span className="text-xs font-medium">Supprimer</span>
                             </button>
                         </div>
                     </div>

@@ -167,6 +167,32 @@ const HomeContent = ({ refreshKey, onDocumentClick }: { refreshKey: number, onDo
     }
   };
 
+  const handleDelete = async (docId: number, docName: string) => {
+    if (!window.confirm(`Confirmation de suppression pour ${docName}.`)) {
+      console.log("Suppression annulée par l'utilisateur.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/documents/${docId}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        console.log(`Document ${docId} supprimé avec succès.`);
+        alert(`Document "${docName}" a été supprimé avec succès!`);
+        // Rafraîchir la liste
+        fetchRecentDocuments();
+      } else {
+        const errorData = await response.json().catch(() => ({ error: 'Erreur inconnue' }));
+        throw new Error(`Échec de la suppression sur le serveur: ${errorData.error}`);
+      }
+    } catch (err) {
+      console.error("Erreur lors de la suppression:", err);
+      alert('Erreur lors de la suppression du document');
+    }
+  };
+
   const handleCloseViewer = () => {
     setViewingDocument(null);
   };
@@ -319,38 +345,50 @@ const HomeContent = ({ refreshKey, onDocumentClick }: { refreshKey: number, onDo
               </p>
             </div>
 
-            {/* Boutons */}
-            <div className="flex flex-col p-4 gap-3">
+            {/* Boutons en grille 2x2 */}
+            <div className="grid grid-cols-2 p-4 gap-3">
               <button
                 onClick={handleSignDocument}
                 disabled={isSigned(selectedDoc)}
-                className={`px-4 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2 whitespace-nowrap ${
+                className={`py-3 px-2 rounded-lg font-semibold transition-all duration-200 flex flex-col items-center justify-center gap-1 ${
                   isSigned(selectedDoc)
                     ? 'bg-gray-100 dark:bg-slate-800 text-gray-400 dark:text-gray-600 cursor-not-allowed'
-                    : 'bg-indigo-500 hover:bg-indigo-600 text-white shadow-md hover:shadow-lg hover:scale-105 active:scale-95'
+                    : 'bg-slate-600 hover:bg-slate-700 text-white shadow-md hover:shadow-lg hover:scale-105 active:scale-95'
                 }`}
               >
-                <span>✓</span>
-                <span>Signer</span>
+                <span className="text-xl">✓</span>
+                <span className="text-xs font-medium">Signer</span>
               </button>
               <button
                 onClick={handleFillDocument}
                 disabled={isFilled(selectedDoc)}
-                className={`px-4 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2 whitespace-nowrap ${
+                className={`py-3 px-2 rounded-lg font-semibold transition-all duration-200 flex flex-col items-center justify-center gap-1 ${
                   isFilled(selectedDoc)
                     ? 'bg-gray-100 dark:bg-slate-800 text-gray-400 dark:text-gray-600 cursor-not-allowed'
-                    : 'bg-purple-500 hover:bg-purple-600 text-white shadow-md hover:shadow-lg hover:scale-105 active:scale-95'
+                    : 'bg-slate-600 hover:bg-slate-700 text-white shadow-md hover:shadow-lg hover:scale-105 active:scale-95'
                 }`}
               >
-                <span>📝</span>
-                <span>Remplir</span>
+                <span className="text-xl">📝</span>
+                <span className="text-xs font-medium">Remplir</span>
               </button>
               <button
                 onClick={handleViewDocument}
-                className="px-4 py-2.5 rounded-lg text-sm font-semibold text-white bg-blue-500 hover:bg-blue-600 transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-lg hover:scale-105 active:scale-95 whitespace-nowrap"
+                className="py-3 px-2 rounded-lg font-semibold text-white bg-slate-600 hover:bg-slate-700 transition-all duration-200 flex flex-col items-center justify-center gap-1 shadow-md hover:shadow-lg hover:scale-105 active:scale-95"
               >
-                <span>👁️</span>
-                <span>Voir</span>
+                <span className="text-xl">👁️</span>
+                <span className="text-xs font-medium">Voir</span>
+              </button>
+              <button
+                onClick={(e) => {
+                    e.stopPropagation();
+                    handleDelete(selectedDoc.id, selectedDoc.nom_fichier);
+                    setShowContextMenu(false);
+                    setSelectedDoc(null);
+                }}
+                className="py-3 px-2 rounded-lg font-semibold text-white bg-slate-600 hover:bg-slate-700 transition-all duration-200 flex flex-col items-center justify-center gap-1 shadow-md hover:shadow-lg hover:scale-105 active:scale-95"
+              >
+                <span className="text-xl">🗑️</span>
+                <span className="text-xs font-medium">Supprimer</span>
               </button>
             </div>
           </div>
