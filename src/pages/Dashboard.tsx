@@ -33,6 +33,7 @@ interface Document {
   categorie: string; // Utilisé pour afficher si c'est "archivé" ou autre
   date_ajout: string; // La date au format chaîne (ex: "2025-11-27 10:30:00")
   is_signed?: boolean | number; // Peut être true/false ou 0/1 de SQLite
+  is_filled?: boolean | number; // Peut être true/false ou 0/1 de SQLite
 }
 
 // CORRECTION CRITIQUE : Utilisation stricte de localhost pour éviter les blocages inter-IP
@@ -47,6 +48,7 @@ const HomeContent = ({ refreshKey, onDocumentClick }: { refreshKey: number, onDo
   const [showContextMenu, setShowContextMenu] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
   const [showSignaturePad, setShowSignaturePad] = useState(false);
+  const [viewingDocument, setViewingDocument] = useState<{ fileName: string; fileUrl: string; documentId: number } | null>(null);
 
   // Fonction pour charger les documents récents
   const fetchRecentDocuments = useCallback(async () => {
@@ -86,9 +88,11 @@ const HomeContent = ({ refreshKey, onDocumentClick }: { refreshKey: number, onDo
     }
   };
 
-  // Logique pour simuler l'état "Signé" ou "Non Signé"
-  // Par défaut, tous les documents sont "Non signé" quand ils sont ajoutés
-  const isSigned = (doc: Document) => doc.is_signed === true || doc.is_signed === 1; 
+  // Logique pour vérifier si un document est signé
+  const isSigned = (doc: Document) => doc.is_signed === true || doc.is_signed === 1;
+
+  // Logique pour vérifier si un document est rempli
+  const isFilled = (doc: Document) => doc.is_filled === true || doc.is_filled === 1; 
   
   const handleSignDocument = async () => {
     if (!selectedDoc) return;
@@ -126,10 +130,45 @@ const HomeContent = ({ refreshKey, onDocumentClick }: { refreshKey: number, onDo
 
   const handleViewDocument = () => {
     if (selectedDoc) {
-      onDocumentClick(selectedDoc);
+      setViewingDocument({
+        fileName: selectedDoc.nom_fichier,
+        fileUrl: `${API_BASE_URL}/api/documents/preview/${selectedDoc.id}`,
+        documentId: selectedDoc.id
+      });
       setShowContextMenu(false);
       setSelectedDoc(null);
     }
+  };
+
+  const handleFillDocument = async () => {
+    if (!selectedDoc) return;
+    try {
+      // Appeler l'API pour marquer le document comme rempli
+      const response = await fetch(`${API_BASE_URL}/api/documents/${selectedDoc.id}/fill`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Erreur lors de la mise à jour du document');
+      }
+
+      console.log('Document marqué comme rempli');
+      alert(`Document "${selectedDoc.nom_fichier}" a été marqué comme rempli!`);
+      setShowContextMenu(false);
+      setSelectedDoc(null);
+      // Rafraîchir la liste
+      fetchRecentDocuments();
+    } catch (error) {
+      console.error('Erreur:', error);
+      alert('Erreur lors du remplissage du document');
+    }
+  };
+
+  const handleCloseViewer = () => {
+    setViewingDocument(null);
   };
   
   // Affichage de l'état de chargement
@@ -158,8 +197,6 @@ const HomeContent = ({ refreshKey, onDocumentClick }: { refreshKey: number, onDo
           </div>
         ) : (
           documents.map((doc, index) => {
-            const signedStatus = isSigned(doc);
-            
             return (
               <div
                 key={doc.id}
@@ -197,27 +234,52 @@ const HomeContent = ({ refreshKey, onDocumentClick }: { refreshKey: number, onDo
                         </p>
                       </div>
 
-                      {/* Badge pour l'état "Signé" / "Non Signé" */}
-                      <Badge
-                        variant={signedStatus ? "default" : "destructive"}
-                        className={`flex items-center gap-1 transition-all duration-300 flex-shrink-0 text-xs h-fit w-fit ${
-                          signedStatus
-                            ? "bg-success hover:bg-success/90 dark:bg-emerald-600/80 dark:hover:bg-emerald-600"
-                            : "bg-destructive hover:bg-destructive/90 dark:bg-red-600/60 dark:hover:bg-red-600/70"
-                        }`}
-                      >
-                        {signedStatus ? (
-                          <>
-                            <CheckCircle2 className="w-3 h-3" />
-                            <span>Signé</span>
-                          </>
-                        ) : (
-                          <>
-                            <XCircle className="w-3 h-3" />
-                            <span>Non signé</span>
-                          </>
-                        )}
-                      </Badge>
+                      {/* Badges pour les états "Signé" / "Non Signé" et "Rempli" / "À remplir" */}
+                      <div className="flex gap-2 flex-shrink-0 flex-wrap justify-end">
+                        {/* Badge Rempli/À remplir */}
+                        <Badge
+                          variant={isFilled(doc) ? "default" : "secondary"}
+                          className={`flex items-center gap-1 transition-all duration-300 flex-shrink-0 text-xs h-fit w-fit ${
+                            isFilled(doc)
+                              ? "bg-blue-600 hover:bg-blue-700 dark:bg-blue-600/80 dark:hover:bg-blue-600"
+                              : "bg-gray-400 hover:bg-gray-500 dark:bg-gray-600/60 dark:hover:bg-gray-600/70"
+                          }`}
+                        >
+                          {isFilled(doc) ? (
+                            <>
+                              <span>✓</span>
+                              <span>Rempli</span>
+                            </>
+                          ) : (
+                            <>
+                              <span>○</span>
+                              <span>À remplir</span>
+                            </>
+                          )}
+                        </Badge>
+
+                        {/* Badge Signé/Non signé */}
+                        <Badge
+                          variant={isSigned(doc) ? "default" : "destructive"}
+                          className={`flex items-center gap-1 transition-all duration-300 flex-shrink-0 text-xs h-fit w-fit ${
+                            isSigned(doc)
+                              ? "bg-success hover:bg-success/90 dark:bg-emerald-600/80 dark:hover:bg-emerald-600"
+                              : "bg-destructive hover:bg-destructive/90 dark:bg-red-600/60 dark:hover:bg-red-600/70"
+                          }`}
+                        >
+                          {isSigned(doc) ? (
+                            <>
+                              <CheckCircle2 className="w-3 h-3" />
+                              <span>Signé</span>
+                            </>
+                          ) : (
+                            <>
+                              <XCircle className="w-3 h-3" />
+                              <span>Non signé</span>
+                            </>
+                          )}
+                        </Badge>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -238,33 +300,54 @@ const HomeContent = ({ refreshKey, onDocumentClick }: { refreshKey: number, onDo
             }}
           />
           <div 
-            className="fixed z-50 rounded-2xl shadow-2xl border border-border/80 overflow-hidden animate-in fade-in zoom-in-95 duration-200 bg-gradient-to-br from-background via-background to-background/95"
+            className="fixed z-50 rounded-xl shadow-2xl border border-indigo-200/30 dark:border-indigo-500/30 overflow-hidden animate-in fade-in zoom-in-95 duration-200 bg-white dark:bg-slate-900"
             style={{
-              left: `${Math.min(menuPosition.x, window.innerWidth - 200)}px`,
-              top: `${Math.min(menuPosition.y, window.innerHeight - 200)}px`,
-              transform: `translate(${menuPosition.x > window.innerWidth - 200 ? '-100%' : '0'}, 0)`,
-              width: 'auto',
-              minWidth: '190px',
+              left: `${Math.min(menuPosition.x, window.innerWidth - 280)}px`,
+              top: `${Math.min(menuPosition.y, window.innerHeight - 250)}px`,
+              transform: `translate(${menuPosition.x > window.innerWidth - 280 ? '-100%' : '0'}, 0)`,
+              width: '280px',
               maxWidth: 'calc(100vw - 30px)'
             }}
           >
-            {/* Boutons avec design horizontal/vertical cleaner */}
-            <div className="flex flex-col p-2 sm:p-3 gap-1 sm:gap-2">
+            {/* En-tête avec nom du document */}
+            <div className="bg-gradient-to-r from-indigo-50 to-indigo-100 dark:from-indigo-950/40 dark:to-slate-900 px-4 py-3 border-b border-indigo-200/30 dark:border-indigo-500/20">
+              <h3 className="font-semibold text-gray-900 dark:text-indigo-100 text-sm truncate">
+                {selectedDoc.nom_fichier}
+              </h3>
+              <p className="text-xs text-gray-600 dark:text-indigo-300/70 mt-1">
+                Que souhaitez-vous faire ?
+              </p>
+            </div>
+
+            {/* Boutons */}
+            <div className="flex flex-col p-4 gap-3">
               <button
                 onClick={handleSignDocument}
                 disabled={isSigned(selectedDoc)}
-                className={`px-3 sm:px-4 py-2 sm:py-3 rounded-lg sm:rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-1 sm:gap-2 whitespace-nowrap ${
+                className={`px-4 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2 whitespace-nowrap ${
                   isSigned(selectedDoc)
-                    ? 'bg-gray-100/50 dark:bg-slate-800/30 text-gray-400 dark:text-gray-600 cursor-not-allowed opacity-60'
-                    : 'bg-gradient-to-r from-indigo-500 to-indigo-600 text-white hover:from-indigo-600 hover:to-indigo-700 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95'
+                    ? 'bg-gray-100 dark:bg-slate-800 text-gray-400 dark:text-gray-600 cursor-not-allowed'
+                    : 'bg-indigo-500 hover:bg-indigo-600 text-white shadow-md hover:shadow-lg hover:scale-105 active:scale-95'
                 }`}
               >
                 <span>✓</span>
                 <span>Signer</span>
               </button>
               <button
+                onClick={handleFillDocument}
+                disabled={isFilled(selectedDoc)}
+                className={`px-4 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2 whitespace-nowrap ${
+                  isFilled(selectedDoc)
+                    ? 'bg-gray-100 dark:bg-slate-800 text-gray-400 dark:text-gray-600 cursor-not-allowed'
+                    : 'bg-purple-500 hover:bg-purple-600 text-white shadow-md hover:shadow-lg hover:scale-105 active:scale-95'
+                }`}
+              >
+                <span>📝</span>
+                <span>Remplir</span>
+              </button>
+              <button
                 onClick={handleViewDocument}
-                className="px-3 sm:px-4 py-2 sm:py-3 rounded-lg sm:rounded-xl text-xs sm:text-sm font-semibold text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 transition-all duration-200 flex items-center justify-center gap-1 sm:gap-2 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 whitespace-nowrap"
+                className="px-4 py-2.5 rounded-lg text-sm font-semibold text-white bg-blue-500 hover:bg-blue-600 transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-lg hover:scale-105 active:scale-95 whitespace-nowrap"
               >
                 <span>👁️</span>
                 <span>Voir</span>
@@ -285,6 +368,16 @@ const HomeContent = ({ refreshKey, onDocumentClick }: { refreshKey: number, onDo
           documentName={selectedDoc.nom_fichier}
           documentPath={`${API_BASE_URL}/api/documents/preview/${selectedDoc.id}`}
           documentType={selectedDoc.nom_fichier.split('.').pop()?.toLowerCase() || 'pdf'}
+        />
+      )}
+
+      {/* Document Viewer Modal */}
+      {viewingDocument && (
+        <DocumentViewer
+          fileName={viewingDocument.fileName}
+          fileUrl={viewingDocument.fileUrl}
+          onClose={handleCloseViewer}
+          documentId={viewingDocument.documentId}
         />
       )}
     </div>

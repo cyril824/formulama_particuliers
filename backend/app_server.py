@@ -8,7 +8,7 @@ import base64
 import ssl
 
 # Importe toutes les fonctions nécessaires
-from gestion_db import ajouter_document, recuperer_documents_par_categorie, supprimer_document, initialiser_base_de_donnees, recuperer_4_derniers_documents, diagnostiquer_fichiers_locaux, recuperer_tous_documents, recuperer_document_par_id, marquer_document_signe 
+from gestion_db import ajouter_document, recuperer_documents_par_categorie, supprimer_document, initialiser_base_de_donnees, recuperer_4_derniers_documents, diagnostiquer_fichiers_locaux, recuperer_tous_documents, recuperer_document_par_id, marquer_document_signe, marquer_document_rempli 
 
 # 1. Configuration de l'application Flask
 app = Flask(__name__)
@@ -190,6 +190,19 @@ def api_marquer_document_signe(doc_id):
             return jsonify({"error": f"Impossible de mettre à jour le document ID {doc_id}."}), 404
     except Exception as e:
         print(f"Erreur lors de la signature du document: {e}")
+        return jsonify({"error": "Erreur interne du serveur"}), 500
+
+# 5.1 Endpoint pour marquer un document comme rempli (Méthode PUT)
+@app.route('/api/documents/<int:doc_id>/fill', methods=['PUT'])
+def api_marquer_document_rempli(doc_id):
+    try:
+        # Marquer le document comme rempli
+        if marquer_document_rempli(doc_id):
+            return jsonify({"message": f"Document ID {doc_id} marqué comme rempli."}), 200
+        else:
+            return jsonify({"error": f"Impossible de mettre à jour le document ID {doc_id}."}), 404
+    except Exception as e:
+        print(f"Erreur lors du remplissage du document: {e}")
         return jsonify({"error": "Erreur interne du serveur"}), 500
 
 # Endpoint pour récupérer la signature d'un document
