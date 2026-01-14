@@ -5,60 +5,55 @@ import wave
 import struct
 import math
 
-def generate_notification_sound(filename, duration=0.5):
+def generate_notification_sound(filename, duration=0.6):
     """
-    Génère un son de notification composé de deux notes (Do et Mi) avec une enveloppe ADSR
+    Génère un son de notification de succès avec trois notes montantes (La, Do, Mi)
+    pour un effet positif et confirmant
     """
     sample_rate = 44100
     num_samples = int(sample_rate * duration)
     
-    # Fréquences (notes Do et Mi)
-    freq1 = 523.25  # Do5
-    freq2 = 659.25  # Mi5
+    # Fréquences montantes - effet positif
+    freq1 = 440.00   # La4 (grave)
+    freq2 = 523.25   # Do5 (moyen)
+    freq3 = 659.25   # Mi5 (aigu)
     
-    # Paramètres ADSR (Attack, Decay, Sustain, Release)
-    attack_time = 0.05
-    decay_time = 0.15
-    sustain_time = 0.15
-    release_time = 0.15
+    # Trois notes successives pour un effet ascendant positif
+    note1_duration = 0.15
+    note2_duration = 0.20
+    note3_duration = 0.25
     
-    attack_samples = int(sample_rate * attack_time)
-    decay_samples = int(sample_rate * decay_time)
-    sustain_samples = int(sample_rate * sustain_time)
-    release_samples = int(sample_rate * release_time)
+    note1_samples = int(sample_rate * note1_duration)
+    note2_samples = int(sample_rate * note2_duration)
+    note3_samples = int(sample_rate * note3_duration)
     
     samples = []
     
     for i in range(num_samples):
-        # Déterminer la phase ADSR
-        if i < attack_samples:
-            # Phase d'attaque: 0 à 1
-            envelope = i / attack_samples
-        elif i < attack_samples + decay_samples:
-            # Phase de décroissance: 1 à 0.7
-            envelope = 1.0 - (i - attack_samples) / decay_samples * 0.3
-        elif i < attack_samples + decay_samples + sustain_samples:
-            # Phase de sustain: 0.7
-            envelope = 0.7
-        elif i < attack_samples + decay_samples + sustain_samples + release_samples:
-            # Phase de relâchement: 0.7 à 0
-            envelope = 0.7 * (1.0 - (i - attack_samples - decay_samples - sustain_samples) / release_samples)
-        else:
-            envelope = 0
-        
-        # Calculer le temps
         t = i / sample_rate
         
-        # Générer un son composite avec deux fréquences
-        # Première note (Do) pour la première moitié du temps
-        if i < num_samples * 0.6:
-            sample = 0.5 * math.sin(2 * math.pi * freq1 * t) + 0.3 * math.sin(2 * math.pi * freq2 * t)
+        # Déterminer quelle note jouer
+        if i < note1_samples:
+            # Première note (La4)
+            freq = freq1
+            local_time = i / note1_samples
+            # Envelope rapide avec decay
+            envelope = max(0, 1.0 - local_time * 1.5)
+        elif i < note1_samples + note2_samples:
+            # Deuxième note (Do5)
+            freq = freq2
+            local_i = i - note1_samples
+            local_time = local_i / note2_samples
+            envelope = max(0, 1.0 - local_time * 1.3)
         else:
-            # Deuxième note (Mi) pour la seconde moitié
-            sample = 0.3 * math.sin(2 * math.pi * freq2 * t) + 0.2 * math.sin(2 * math.pi * freq1 * t)
+            # Troisième note (Mi5)
+            freq = freq3
+            local_i = i - note1_samples - note2_samples
+            local_time = local_i / note3_samples if note3_samples > 0 else 0
+            envelope = max(0, 1.0 - local_time * 1.2)
         
-        # Appliquer l'enveloppe ADSR
-        sample = sample * envelope
+        # Générer le son sinusoïdal
+        sample = 0.7 * math.sin(2 * math.pi * freq * t) * envelope
         
         # Limiter pour éviter la distorsion
         sample = max(-1.0, min(1.0, sample))

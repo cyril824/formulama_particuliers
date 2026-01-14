@@ -18,7 +18,7 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const [soundVolume, setSoundVolumeState] = useState(() => {
     const saved = localStorage.getItem('soundVolume');
-    return saved ? JSON.parse(saved) : 70;
+    return saved ? JSON.parse(saved) : 50;
   });
 
   useEffect(() => {
