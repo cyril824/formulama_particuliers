@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "@/context/ThemeContext";
+import { AudioProvider } from "@/context/AudioContext";
 import { DocumentProvider } from "@/context/DocumentContext";
 
 // Utilisation de React.lazy pour les imports dynamiques, plus robustes pour la résolution de chemin.
@@ -27,29 +28,31 @@ const FallbackLoader = () => (
 
 const App = () => (
   <ThemeProvider>
-    <DocumentProvider>
-      <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter basename="/app">
-            {/* Suspense permet d'afficher un indicateur de chargement pendant le chargement dynamique du composant */}
-            <Suspense fallback={<FallbackLoader />}>
-                <Routes>
-                  <Route path="/" element={<Login />} />
-                  <Route path="/register" element={<Register />} />
-                  <Route path="/dashboard" element={<Dashboard />} />
-                  <Route path="/profile" element={<Profile />} />
-                  <Route path="/settings" element={<Settings />} />
-                  {/* La nouvelle route pour le centre d'aide */}
-                  <Route path="/aide" element={<HelpPage />} /> 
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-            </Suspense>
-          </BrowserRouter>
-        </TooltipProvider>
-      </QueryClientProvider>
-    </DocumentProvider>
+    <AudioProvider>
+      <DocumentProvider>
+        <QueryClientProvider client={queryClient}>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter basename="/app">
+              {/* Suspense permet d'afficher un indicateur de chargement pendant le chargement dynamique du composant */}
+              <Suspense fallback={<FallbackLoader />}>
+                  <Routes>
+                    <Route path="/" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
+                    <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/profile" element={<Profile />} />
+                    <Route path="/settings" element={<Settings />} />
+                    {/* La nouvelle route pour le centre d'aide */}
+                    <Route path="/aide" element={<HelpPage />} /> 
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+              </Suspense>
+            </BrowserRouter>
+          </TooltipProvider>
+        </QueryClientProvider>
+      </DocumentProvider>
+    </AudioProvider>
   </ThemeProvider>
 );
 

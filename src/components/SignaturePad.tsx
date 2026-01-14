@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { X } from 'lucide-react';
+import { useAudio } from '@/context/AudioContext';
 
 interface SignaturePadProps {
   onSign: (signatureData: string) => void;
@@ -18,6 +19,7 @@ const SignaturePad: React.FC<SignaturePadProps> = ({ onSign, onCancel, documentN
   const [isEmpty, setIsEmpty] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [blobUrl, setBlobUrl] = useState<string | null>(null);
+  const { playSoundEffect } = useAudio();
 
   useEffect(() => {
     if (!documentPath) return;
@@ -178,6 +180,10 @@ const SignaturePad: React.FC<SignaturePadProps> = ({ onSign, onCancel, documentN
     if (!canvas) return;
 
     const signatureData = canvas.toDataURL('image/png');
+    
+    // Jouer le son de validation
+    playSoundEffect('notification');
+    
     onSign(signatureData);
   };
 

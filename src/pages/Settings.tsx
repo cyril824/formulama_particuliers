@@ -4,17 +4,19 @@ import { Card } from "@/components/ui/card";
 import { ArrowLeft, Bell, Lock, Eye, Moon, Sun, Volume2, Shield, LogOut, Trash2, Globe } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "@/context/ThemeContext";
+import { useAudio } from "@/context/AudioContext";
 
 const Settings = () => {
   const navigate = useNavigate();
   const { darkMode, toggleDarkMode } = useTheme();
+  const { soundEffectsEnabled, soundVolume, toggleSoundEffects, setSoundVolume, playSoundEffect } = useAudio();
   const [settings, setSettings] = useState({
     notifications: true,
     twoFactor: false,
     emailUpdates: true,
-    soundEffects: true,
     dataSaving: true,
   });
+
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -23,6 +25,10 @@ const Settings = () => {
 
   const toggleSetting = (key: keyof typeof settings) => {
     setSettings(prev => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const handleToggleSoundEffects = () => {
+    toggleSoundEffects();
   };
 
   const handleChangePassword = () => {
@@ -191,7 +197,7 @@ const Settings = () => {
 
         {/* Effets sonores */}
         <Card className="p-3 sm:p-6 mb-3 sm:mb-4">
-          <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center justify-between gap-3 mb-4">
             <div className="flex items-center gap-3 min-w-0">
               <Volume2 className="w-5 h-5 text-primary flex-shrink-0" />
               <div className="min-w-0">
@@ -200,16 +206,47 @@ const Settings = () => {
               </div>
             </div>
             <button
-              onClick={() => toggleSetting('soundEffects')}
+              onClick={handleToggleSoundEffects}
               className={`relative w-12 h-6 rounded-full transition-colors flex-shrink-0 ${
-                settings.soundEffects ? 'bg-primary' : 'bg-muted'
+                soundEffectsEnabled ? 'bg-primary' : 'bg-muted'
               }`}
             >
               <div
                 className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform ${
-                  settings.soundEffects ? 'translate-x-6' : ''
+                  soundEffectsEnabled ? 'translate-x-6' : ''
                 }`}
               />
+            </button>
+          </div>
+
+          {/* Volume Slider - Always visible but disabled when sound effects are off */}
+          <div className="space-y-3 pt-3 border-t border-border">
+            <div className="flex items-center justify-between gap-3">
+              <label className="text-sm font-medium text-foreground">Volume</label>
+              <span className="text-sm font-semibold text-primary">{soundVolume}%</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <input
+                type="range"
+                min="0"
+                max="100"
+                value={soundVolume}
+                onChange={(e) => setSoundVolume(Number(e.target.value))}
+                disabled={!soundEffectsEnabled}
+                className="flex-1 h-2 bg-muted rounded-lg appearance-none cursor-pointer accent-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{
+                  background: soundEffectsEnabled 
+                    ? `linear-gradient(to right, var(--primary) 0%, var(--primary) ${soundVolume}%, var(--muted) ${soundVolume}%, var(--muted) 100%)`
+                    : undefined
+                }}
+              />
+            </div>
+            <button
+              onClick={() => playSoundEffect('notification')}
+              disabled={!soundEffectsEnabled}
+              className="w-full px-3 py-2 text-sm font-medium bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Tester le son
             </button>
           </div>
         </Card>
