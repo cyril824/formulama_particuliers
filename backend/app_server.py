@@ -306,5 +306,5 @@ def serve_document_file(filename):
 if __name__ == '__main__':
     initialiser_base_de_donnees()
     print(f"\n[INFO] Dossier de documents configuré : {DATA_FOLDER_PATH}\n")
-    # Lancement du serveur Flask sur le port 5001
-    app.run(debug=True, host="0.0.0.0", port=5001)
+    # Lancement du serveur Flask sur le port 5000
+    app.run(debug=True, host="0.0.0.0", port=5000)
