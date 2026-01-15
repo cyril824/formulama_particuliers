@@ -20,15 +20,17 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-secondary/30 to-accent px-4">
-      {/* Bouton Retour au site en haut à gauche */}
-      <div className="absolute top-4 left-4">
+      {/* Bouton Retour au site en haut à gauche - Responsive et plus fin */}
+      <div className="absolute top-3 left-3 sm:top-4 sm:left-4">
         <Button
-          variant="outline"
+          variant="ghost"
+          size="sm"
           onClick={() => window.location.href = '/'}
-          className="gap-2 text-primary hover:bg-primary/10 hover:border-primary/20"
+          className="gap-1 sm:gap-2 text-primary/80 hover:text-primary hover:bg-primary/5 text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-2 h-auto transition-colors duration-200"
         >
-          <ArrowLeft className="w-4 h-4" />
-          Retour au site
+          <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+          <span className="hidden sm:inline">Retour au site</span>
+          <span className="sm:hidden">Retour au site</span>
         </Button>
       </div>
 
