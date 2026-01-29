@@ -37,7 +37,7 @@ interface Document {
 }
 
 // CORRECTION CRITIQUE : Utilisation stricte de localhost pour éviter les blocages inter-IP
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001';
+const API_BASE_URL = '';
 
 // --- COMPOSANT : Contenu de la Page d'Accueil DYNAMIQUE ---
 const HomeContent = ({ refreshKey, onDocumentClick }: { refreshKey: number, onDocumentClick: (doc: Document) => void }) => {

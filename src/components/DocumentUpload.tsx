@@ -27,7 +27,7 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({ onUploadSuccess }) => {
     const { notifyDocumentChange } = useDocumentContext(); 
 
     // Définition de l'URL du serveur API — utilise le port 5001 pour Flask
-    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001';
+    const API_BASE_URL = '';
 
     // Efface le message automatiquement après 4 secondes pour les messages de succès
     useEffect(() => {

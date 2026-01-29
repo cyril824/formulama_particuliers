@@ -18,7 +18,7 @@ const DocumentViewer: React.FC<DocumentViewerProps> = ({ fileName, fileUrl, onCl
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [signatureUrl, setSignatureUrl] = useState<string | null>(null);
-    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001';
+    const API_BASE_URL = '';
 
     // Définir la classe MIME type pour une meilleure gestion de l'affichage
     const isImage = /\.(jpe?g|png|gif)$/i.test(fileName);

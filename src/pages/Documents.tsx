@@ -6,7 +6,7 @@ import SignaturePad from '@/components/SignaturePad';
 import DocumentViewer from '@/components/DocumentViewer';
 
 // CORRECTION CRITIQUE : Utilisation stricte de localhost pour éviter les blocages inter-IP
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001';
+const API_BASE_URL = '';
 
 // --- INTERFACE MISE À JOUR POUR CORRESPONDRE À LA DB SQLITE ---
 interface DocumentItem {
