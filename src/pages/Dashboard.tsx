@@ -421,126 +421,6 @@ const HomeContent = ({ refreshKey, onDocumentClick }: { refreshKey: number, onDo
 };
 
 
-// --- COMPOSANT DE NAVIGATION LATÉRALE DYNAMIQUE ---
-const SidebarContent = () => {
-  const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
-  const [stats, setStats] = useState({ total: 0, archives: 0, supportes: 0 });
-  
-  // Lit le paramètre 'view' de l'URL ou utilise 'home' par défaut
-  const currentView = searchParams.get('view') || 'home'; 
-
-  // Charge les statistiques au montage
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const categories = ["Documents archivés", "Documents supportés"];
-        const counts: { [key: string]: number } = { "Documents archivés": 0, "Documents supportés": 0 };
-        
-        for (const category of categories) {
-          const url = `${API_BASE_URL}/api/documents/${encodeURIComponent(category)}`;
-          const response = await fetch(url);
-          if (response.ok) {
-            const data = await response.json();
-            counts[category] = Array.isArray(data) ? data.length : 0;
-          }
-        }
-        
-        const total = Object.values(counts).reduce((a, b) => a + b, 0);
-        setStats({
-          total,
-          archives: counts["Documents archivés"],
-          supportes: counts["Documents supportés"]
-        });
-      } catch (error) {
-        console.error("Erreur lors du chargement des stats:", error);
-      }
-    };
-
-    fetchStats();
-  }, []);
-
-  // Gère la déconnexion
-  const handleLogout = () => {
-    navigate('/'); 
-  };
-
-
-  return (
-    <div className="flex flex-col h-full">
-      <div className="p-6 border-b border-border">
-        <h2 className="text-xl font-bold text-primary">Formulama</h2>
-        <p className="text-sm text-muted-foreground">Menu de navigation</p>
-      </div>
-
-      {/* Section Statistiques */}
-      <div className="px-4 py-4 space-y-2 border-b border-border bg-primary/5">
-        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Statistiques</p>
-        <div className="grid grid-cols-3 gap-2">
-          <div className="text-center p-2 rounded-lg bg-background/50">
-            <p className="text-xs text-muted-foreground">Total</p>
-            <p className="text-lg font-bold text-primary">{stats.total}</p>
-          </div>
-          <div className="text-center p-2 rounded-lg bg-background/50">
-            <p className="text-xs text-muted-foreground">Archivés</p>
-            <p className="text-lg font-bold text-primary">{stats.archives}</p>
-          </div>
-          <div className="text-center p-2 rounded-lg bg-background/50">
-            <p className="text-xs text-muted-foreground">Supportés</p>
-            <p className="text-lg font-bold text-primary">{stats.supportes}</p>
-          </div>
-        </div>
-      </div>
-
-      <nav className="flex-1 px-4 py-6 space-y-1">
-        
-        {/* Lien d'Accueil */}
-        <SheetClose asChild>
-            <Link 
-                to="/dashboard?view=home" 
-                className={`flex items-center gap-3 p-3 rounded-lg transition-colors ${
-                    currentView === 'home'
-                        ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                        : "text-foreground hover:bg-primary/10"
-                }`}
-            >
-                <Home className="w-5 h-5" />
-                Accueil
-            </Link>
-        </SheetClose>
-
-
-        <h3 className="text-xs font-semibold uppercase text-muted-foreground mt-4 pt-4 border-t border-border">Gestion des Documents</h3>
-
-        {/* Liens pour les catégories dynamiques (Documents) */}
-        {CATEGORIES.map((item) => (
-          <SheetClose asChild key={item.name}>
-            <Link
-                // Met à jour le paramètre 'view' avec la catégorie
-                to={`/dashboard?view=${item.url}`}
-                className={`flex items-center gap-3 p-3 rounded-lg transition-colors ${
-                  currentView === item.url
-                    ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                    : "text-foreground hover:bg-primary/10"
-                }`}
-            >
-              <item.icon className="w-5 h-5" />
-              {item.name}
-            </Link>
-          </SheetClose>
-        ))}
-      </nav>
-
-      <div className="p-4 border-t border-border mt-auto">
-        <Link to="/aide" className="flex items-center gap-3 p-3 rounded-lg text-muted-foreground hover:bg-primary/10 transition-colors">
-            <HelpCircle className="w-5 h-5" />
-            Aide
-        </Link>
-      </div>
-    </div>
-  );
-};
-
 
 // --- COMPOSANT PRINCIPAL DASHBOARD ---
 const Dashboard = () => {
@@ -591,21 +471,26 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-secondary/30 to-accent overflow-hidden flex flex-col">
       
-      {/* Header */}
+      {/* Header avec menu hamburger sur mobile */}
       <header className="bg-card/80 backdrop-blur-sm border-b border-border sticky top-0 z-40 shadow-[var(--shadow-soft)]">
-        <div className="w-full px-3 sm:px-4 h-14 sm:h-16 flex items-center justify-between">
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="hover:bg-primary/10">
-                <Menu className="h-5 w-5" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="w-72 p-0">
-              <SidebarContent /> 
-            </SheetContent>
-          </Sheet>
+        <div className="w-full px-3 sm:px-4 h-14 sm:h-16 flex items-center justify-between gap-3">
+          {/* Menu hamburger MOBILE ONLY - À GAUCHE */}
+          <div className="flex items-center gap-2 md:hidden">
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="hover:bg-primary/10">
+                  <Menu className="h-5 w-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="w-72 p-0">
+                <NavigationMenu /> 
+              </SheetContent>
+            </Sheet>
+          </div>
 
-          <h1 className="text-lg sm:text-xl font-bold text-foreground">Formulama</h1>
+          {/* Titre */}
+          <h1 className="text-lg sm:text-xl font-bold text-foreground flex-1 text-center md:hidden">Formulama</h1>
+          <h1 className="hidden md:block text-lg sm:text-xl font-bold text-foreground">Formulama</h1>
           
           {/* Menu déroulant de profil en haut à droite */}
           <DropdownMenu>
