@@ -6,7 +6,7 @@ from werkzeug.utils import secure_filename
 import urllib.parse
 import base64 
 import ssl
-
+ 
 # Importe toutes les fonctions nécessaires
 from gestion_db import ajouter_document, recuperer_documents_par_categorie, supprimer_document, initialiser_base_de_donnees, recuperer_4_derniers_documents, diagnostiquer_fichiers_locaux, recuperer_tous_documents, recuperer_document_par_id, marquer_document_signe, marquer_document_rempli 
 
