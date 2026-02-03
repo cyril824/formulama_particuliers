@@ -1,8 +1,7 @@
-import { Archive, FileCheck, Database, HelpCircle, LogOut, Home, FileText } from "lucide-react";
+import { Archive, FileCheck, HelpCircle, Home } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 const NavigationMenu = () => {
   const navigate = useNavigate();
@@ -10,9 +9,8 @@ const NavigationMenu = () => {
 
   const menuItems = [
     { icon: Home, label: "Accueil", path: "/dashboard" },
-    { icon: Archive, label: "Documents archivés", path: "/archived" },
-    { icon: FileCheck, label: "Documents supportés", path: "/supported" },
-    { icon: Database, label: "Base de données perso", path: "/database" },
+    { icon: FileCheck, label: "Documents supportés", path: "/dashboard?view=Documents supportés" },
+    { icon: Archive, label: "Documents archivés", path: "/dashboard?view=Documents archivés" },
   ];
 
   return (
@@ -56,24 +54,13 @@ const NavigationMenu = () => {
         <Separator className="my-4" />
 
         <button
-          onClick={() => navigate("/help")}
+          onClick={() => navigate("/aide")}
           className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-all duration-200 hover:bg-primary/10 hover:text-primary group"
         >
           <HelpCircle className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
           <span className="font-medium">Aide</span>
         </button>
       </nav>
-
-      <div className="p-4 border-t border-border">
-        <Button
-          variant="outline"
-          onClick={() => navigate("/")}
-          className="w-full justify-start gap-3 hover:bg-destructive/10 hover:text-destructive hover:border-destructive/20"
-        >
-          <LogOut className="w-5 h-5" />
-          Déconnexion
-        </Button>
-      </div>
     </div>
   );
 };
