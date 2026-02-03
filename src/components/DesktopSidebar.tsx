@@ -1,4 +1,4 @@
-import { Archive, FileCheck, HelpCircle, Home, Settings, User } from "lucide-react";
+import { Archive, FileCheck, HelpCircle, Home } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -13,34 +13,12 @@ const DesktopSidebar = () => {
     { icon: Archive, label: "Documents archivés", path: "/dashboard?view=Documents archivés" },
   ];
 
-  const secondaryItems = [
-    { icon: HelpCircle, label: "Aide", path: "/aide" },
-    { icon: Settings, label: "Paramètres", path: "/settings" },
-    { icon: User, label: "Profil", path: "/profile" },
-  ];
-
   return (
     <div className="fixed left-0 top-0 h-screen w-64 bg-card flex flex-col border-r border-border">
       {/* Header */}
       <div className="px-6 py-5 border-b border-border">
         <h1 className="text-2xl font-bold text-foreground">Formulama</h1>
         <p className="text-xs text-muted-foreground mt-1">Gestion de documents</p>
-      </div>
-
-      {/* Statistiques - Redesignées */}
-      <div className="px-4 py-5 border-b border-border space-y-3">
-        <div className="flex items-center justify-between p-3 rounded-lg bg-primary/5 border border-primary/15">
-          <span className="text-xs font-semibold text-muted-foreground">Documents</span>
-          <span className="text-2xl font-bold text-primary">{stats.total}</span>
-        </div>
-        <div className="flex items-center justify-between p-3 rounded-lg bg-green-500/5 border border-green-500/15">
-          <span className="text-xs font-semibold text-muted-foreground">Signés</span>
-          <span className="text-2xl font-bold text-green-600">{stats.supportes}</span>
-        </div>
-        <div className="flex items-center justify-between p-3 rounded-lg bg-orange-500/5 border border-orange-500/15">
-          <span className="text-xs font-semibold text-muted-foreground">Archivés</span>
-          <span className="text-2xl font-bold text-orange-600">{stats.archives}</span>
-        </div>
       </div>
 
       {/* Navigation principale */}
@@ -60,20 +38,33 @@ const DesktopSidebar = () => {
         </div>
       </nav>
 
+      {/* Statistiques - Redesignées */}
+      <div className="px-4 py-5 border-b border-border space-y-3">
+        <div className="flex items-center justify-between p-3 rounded-lg bg-primary/5 border border-primary/15">
+          <span className="text-xs font-semibold text-muted-foreground">Documents</span>
+          <span className="text-2xl font-bold text-primary">{stats.total}</span>
+        </div>
+        <div className="flex items-center justify-between p-3 rounded-lg bg-green-500/5 border border-green-500/15">
+          <span className="text-xs font-semibold text-muted-foreground">Signés</span>
+          <span className="text-2xl font-bold text-green-600">{stats.supportes}</span>
+        </div>
+        <div className="flex items-center justify-between p-3 rounded-lg bg-orange-500/5 border border-orange-500/15">
+          <span className="text-xs font-semibold text-muted-foreground">Archivés</span>
+          <span className="text-2xl font-bold text-orange-600">{stats.archives}</span>
+        </div>
+      </div>
+
       {/* Compte - En bas */}
       <div className="px-3 py-4 border-t border-border space-y-1">
         <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-2 mb-3">Compte</p>
         <div className="space-y-1">
-          {secondaryItems.map((item, index) => (
-            <button
-              key={index}
-              onClick={() => navigate(item.path)}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-foreground transition-colors duration-150 hover:bg-primary/10 hover:text-primary"
-            >
-              <item.icon className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-              <span className="font-medium">{item.label}</span>
-            </button>
-          ))}
+          <button
+            onClick={() => navigate("/aide")}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-foreground transition-colors duration-150 hover:bg-primary/10 hover:text-primary"
+          >
+            <HelpCircle className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+            <span className="font-medium">Aide</span>
+          </button>
         </div>
       </div>
     </div>
