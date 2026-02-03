@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Edit2, Save, X } from "lucide-react";
+import { ArrowLeft, Edit2, Save, X, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -117,6 +117,39 @@ interface UserData {
   telephoneUrgence: string;
   relationUrgence: string;
 }
+
+// Composant Section repliable pour mobile
+interface SectionProps {
+  title: string;
+  children: React.ReactNode;
+  defaultOpen?: boolean;
+  isEditing?: boolean;
+}
+
+const CollapsibleSection = ({ title, children, defaultOpen = true, isEditing = false }: SectionProps) => {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+
+  return (
+    <div className="border border-border rounded-lg overflow-hidden bg-card">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full px-4 py-3 flex items-center justify-between hover:bg-secondary/50 transition-colors"
+      >
+        <h3 className="text-sm font-semibold text-foreground">{title}</h3>
+        <ChevronDown
+          className={`h-4 w-4 text-muted-foreground transition-transform duration-200 ${
+            isOpen ? "rotate-180" : ""
+          }`}
+        />
+      </button>
+      {isOpen && (
+        <div className="px-4 py-4 border-t border-border bg-card">
+          {children}
+        </div>
+      )}
+    </div>
+  );
+};
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -248,6 +281,9 @@ const Profile = () => {
     archives: 0
   });
 
+  // État pour détection mobile
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
+
   // API URL
   const API_BASE_URL = '';
 
@@ -259,6 +295,13 @@ const Profile = () => {
       setUserData(parsedData);
       setEditedData(parsedData);
     }
+
+    // Écouter les changements de taille d'écran
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   // Gestion de l'édition du profil
@@ -984,7 +1027,204 @@ const Profile = () => {
                   </Button>
                 </div>
               </div>
+            ) : isMobile ? (
+              // AFFICHAGE MOBILE - avec accordéons repliables
+              <div className="space-y-3">
+                {/* Infos principales */}
+                <Card className="p-4 bg-primary/5 border-primary/20">
+                  <div className="space-y-3">
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-xl font-bold text-foreground">
+                        {userData.prenom} {userData.nom}
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        ({userData.dateNaissance ? new Date(userData.dateNaissance).getFullYear() : '?'})
+                      </span>
+                    </div>
+                    <div className="space-y-2 text-sm">
+                      <p><span className="text-muted-foreground">Email:</span> {userData.email}</p>
+                      <p><span className="text-muted-foreground">Téléphone:</span> {userData.telephone}</p>
+                      <p><span className="text-muted-foreground">Adresse:</span> {userData.adresse}, {userData.codePostal} {userData.ville}</p>
+                    </div>
+                  </div>
+                </Card>
+
+                {/* Section Informations Civiles */}
+                <CollapsibleSection title="Informations Civiles" defaultOpen={false}>
+                  <div className="space-y-2">
+                    <div><p className="text-xs text-muted-foreground">Civilité</p><p className="text-sm font-medium">{userData.civilite}</p></div>
+                    <div><p className="text-xs text-muted-foreground">Nom de naissance</p><p className="text-sm font-medium">{userData.nomNaissance}</p></div>
+                    <div><p className="text-xs text-muted-foreground">Nationalité</p><p className="text-sm font-medium">{userData.nationalite}</p></div>
+                    <div><p className="text-xs text-muted-foreground">Situation familiale</p><p className="text-sm font-medium">{userData.situation}</p></div>
+                  </div>
+                </CollapsibleSection>
+
+                {/* Section Identité */}
+                <CollapsibleSection title="Pièce d'Identité" defaultOpen={false}>
+                  <div className="space-y-2">
+                    <div><p className="text-xs text-muted-foreground">Type</p><p className="text-sm font-medium">{userData.typeDocument}</p></div>
+                    <div><p className="text-xs text-muted-foreground">Numéro</p><p className="text-sm font-medium">{userData.numeroDocument}</p></div>
+                    <div><p className="text-xs text-muted-foreground">Expiration</p><p className="text-sm font-medium">{userData.dateExpiration}</p></div>
+                  </div>
+                </CollapsibleSection>
+
+                {/* Section Professionnelle */}
+                {userData.profession && (
+                  <CollapsibleSection title="Professionnelles" defaultOpen={false}>
+                    <div className="space-y-2">
+                      <div><p className="text-xs text-muted-foreground">Profession</p><p className="text-sm font-medium">{userData.profession}</p></div>
+                      <div><p className="text-xs text-muted-foreground">Entreprise</p><p className="text-sm font-medium">{userData.entreprise}</p></div>
+                      <div><p className="text-xs text-muted-foreground">Poste</p><p className="text-sm font-medium">{userData.poste}</p></div>
+                      {userData.typeContrat && <div><p className="text-xs text-muted-foreground">Contrat</p><p className="text-sm font-medium">{userData.typeContrat}</p></div>}
+                    </div>
+                  </CollapsibleSection>
+                )}
+
+                {/* Section Santé */}
+                <CollapsibleSection title="Informations de Santé" defaultOpen={false}>
+                  <div className="space-y-2">
+                    <div><p className="text-xs text-muted-foreground">Groupe sanguin</p><p className="text-sm font-medium">{userData.groupeSanguin}</p></div>
+                    <div><p className="text-xs text-muted-foreground">Allergies</p><p className="text-sm font-medium">{userData.allergies}</p></div>
+                    {userData.mutuelle && <div><p className="text-xs text-muted-foreground">Mutuelle</p><p className="text-sm font-medium">{userData.mutuelle}</p></div>}
+                  </div>
+                </CollapsibleSection>
+
+                {/* Section Assurances */}
+                {(userData.assuranceVehicule || userData.assuranceHabitation) && (
+                  <CollapsibleSection title="Assurances" defaultOpen={false}>
+                    <div className="space-y-2">
+                      {userData.assuranceVehicule && <div><p className="text-xs text-muted-foreground">Véhicule</p><p className="text-sm font-medium">{userData.assuranceVehicule}</p></div>}
+                      {userData.assuranceHabitation && <div><p className="text-xs text-muted-foreground">Habitation</p><p className="text-sm font-medium">{userData.assuranceHabitation}</p></div>}
+                    </div>
+                  </CollapsibleSection>
+                )}
+
+                {/* Section Contact d'urgence */}
+                {userData.nomUrgence && (
+                  <CollapsibleSection title="Contact d'Urgence" defaultOpen={false}>
+                    <div className="space-y-2">
+                      <div><p className="text-xs text-muted-foreground">Nom</p><p className="text-sm font-medium">{userData.nomUrgence}</p></div>
+                      <div><p className="text-xs text-muted-foreground">Téléphone</p><p className="text-sm font-medium">{userData.telephoneUrgence}</p></div>
+                    </div>
+                  </CollapsibleSection>
+                )}
+
+                {/* Section Adresses Secondaires */}
+                {(userData.adresseSecondaire || userData.codePostalSecondaire || userData.villeSecondaire) && (
+                  <CollapsibleSection title="Adresses Secondaires" defaultOpen={false}>
+                    <div className="space-y-2">
+                      {userData.adresseSecondaire && <div><p className="text-xs text-muted-foreground">Adresse</p><p className="text-sm font-medium">{userData.adresseSecondaire}</p></div>}
+                      {userData.codePostalSecondaire && <div><p className="text-xs text-muted-foreground">Code postal</p><p className="text-sm font-medium">{userData.codePostalSecondaire}</p></div>}
+                      {userData.villeSecondaire && <div><p className="text-xs text-muted-foreground">Ville</p><p className="text-sm font-medium">{userData.villeSecondaire}</p></div>}
+                    </div>
+                  </CollapsibleSection>
+                )}
+
+                {/* Section Permis de Conduire */}
+                {(userData.typePermis || userData.numeroPermis || userData.dateValiditePermis) && (
+                  <CollapsibleSection title="Permis de Conduire" defaultOpen={false}>
+                    <div className="space-y-2">
+                      {userData.typePermis && <div><p className="text-xs text-muted-foreground">Type</p><p className="text-sm font-medium">{userData.typePermis}</p></div>}
+                      {userData.numeroPermis && <div><p className="text-xs text-muted-foreground">Numéro</p><p className="text-sm font-medium">{userData.numeroPermis}</p></div>}
+                      {userData.dateValiditePermis && <div><p className="text-xs text-muted-foreground">Validité</p><p className="text-sm font-medium">{userData.dateValiditePermis}</p></div>}
+                    </div>
+                  </CollapsibleSection>
+                )}
+
+                {/* Section Véhicules */}
+                {userData.vehicules && userData.vehicules.length > 0 && (
+                  <CollapsibleSection title="Véhicules" defaultOpen={false}>
+                    <div className="space-y-3">
+                      {userData.vehicules.map((v, i) => (
+                        <div key={i} className="p-3 border border-border rounded bg-secondary/20">
+                          <p className="text-xs font-semibold text-muted-foreground mb-2">Véhicule {i + 1}</p>
+                          <div className="space-y-1 text-xs">
+                            {v.marque && <p><span className="text-muted-foreground">Marque:</span> {v.marque}</p>}
+                            {v.modele && <p><span className="text-muted-foreground">Modèle:</span> {v.modele}</p>}
+                            {v.immatriculation && <p><span className="text-muted-foreground">Immatriculation:</span> {v.immatriculation}</p>}
+                            {v.chevaux && <p><span className="text-muted-foreground">Chevaux:</span> {v.chevaux}</p>}
+                            {v.annee && <p><span className="text-muted-foreground">Année:</span> {v.annee}</p>}
+                            {v.carburant && <p><span className="text-muted-foreground">Carburant:</span> {v.carburant}</p>}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CollapsibleSection>
+                )}
+
+                {/* Section Coordonnées Professionnelles */}
+                {(userData.adresseProfessionnelle || userData.telephoneProfessionnel || userData.emailProfessionnel) && (
+                  <CollapsibleSection title="Coordonnées Professionnelles" defaultOpen={false}>
+                    <div className="space-y-2">
+                      {userData.adresseProfessionnelle && <div><p className="text-xs text-muted-foreground">Adresse</p><p className="text-sm font-medium">{userData.adresseProfessionnelle}</p></div>}
+                      {userData.telephoneProfessionnel && <div><p className="text-xs text-muted-foreground">Téléphone</p><p className="text-sm font-medium">{userData.telephoneProfessionnel}</p></div>}
+                      {userData.emailProfessionnel && <div><p className="text-xs text-muted-foreground">Email</p><p className="text-sm font-medium">{userData.emailProfessionnel}</p></div>}
+                    </div>
+                  </CollapsibleSection>
+                )}
+
+                {/* Section Informations Bancaires */}
+                {(userData.iban || userData.bic || userData.nomBanque) && (
+                  <CollapsibleSection title="Informations Bancaires" defaultOpen={false}>
+                    <div className="space-y-2">
+                      {userData.nomBanque && <div><p className="text-xs text-muted-foreground">Banque</p><p className="text-sm font-medium">{userData.nomBanque}</p></div>}
+                      {userData.iban && <div><p className="text-xs text-muted-foreground">IBAN</p><p className="text-sm font-medium">{userData.iban}</p></div>}
+                      {userData.bic && <div><p className="text-xs text-muted-foreground">BIC</p><p className="text-sm font-medium">{userData.bic}</p></div>}
+                    </div>
+                  </CollapsibleSection>
+                )}
+
+                {/* Section Fiscalité */}
+                {(userData.numeroFiscal || userData.numeroTVA || userData.revenuAnnuel) && (
+                  <CollapsibleSection title="Fiscalité" defaultOpen={false}>
+                    <div className="space-y-2">
+                      {userData.numeroFiscal && <div><p className="text-xs text-muted-foreground">Numéro fiscal</p><p className="text-sm font-medium">{userData.numeroFiscal}</p></div>}
+                      {userData.numeroTVA && <div><p className="text-xs text-muted-foreground">Numéro TVA</p><p className="text-sm font-medium">{userData.numeroTVA}</p></div>}
+                      {userData.revenuAnnuel && <div><p className="text-xs text-muted-foreground">Revenu annuel</p><p className="text-sm font-medium">{userData.revenuAnnuel}€</p></div>}
+                    </div>
+                  </CollapsibleSection>
+                )}
+
+                {/* Section Revenus Fiscaux du Foyer */}
+                {(userData.revenuFiscalFoyer || userData.quotientFamilial) && (
+                  <CollapsibleSection title="Revenus du Foyer" defaultOpen={false}>
+                    <div className="space-y-2">
+                      {userData.revenuFiscalFoyer && <div><p className="text-xs text-muted-foreground">Revenu fiscal</p><p className="text-sm font-medium">{userData.revenuFiscalFoyer}€</p></div>}
+                      {userData.quotientFamilial && <div><p className="text-xs text-muted-foreground">Quotient familial</p><p className="text-sm font-medium">{userData.quotientFamilial}</p></div>}
+                    </div>
+                  </CollapsibleSection>
+                )}
+
+                {/* Section RQTH */}
+                {userData.rqthStatut && (
+                  <CollapsibleSection title="RQTH" defaultOpen={false}>
+                    <div className="space-y-2">
+                      <div><p className="text-xs text-muted-foreground">Statut</p><p className="text-sm font-medium">{userData.rqthStatut === "oui" ? "Oui" : "Non"}</p></div>
+                      {userData.rqthStatut === "oui" && (
+                        <>
+                          {userData.rqthNumero && <div><p className="text-xs text-muted-foreground">Numéro</p><p className="text-sm font-medium">{userData.rqthNumero}</p></div>}
+                          {userData.rqthDateRenouvellement && <div><p className="text-xs text-muted-foreground">Renouvellement</p><p className="text-sm font-medium">{userData.rqthDateRenouvellement}</p></div>}
+                          {userData.rqthOrganisme && <div><p className="text-xs text-muted-foreground">Organisme</p><p className="text-sm font-medium">{userData.rqthOrganisme}</p></div>}
+                        </>
+                      )}
+                    </div>
+                  </CollapsibleSection>
+                )}
+
+                {/* Section Éducation */}
+                {(userData.diplomeNiveau || userData.diplomeSpecialite || userData.etablissementEtudes || userData.dateObtention) && (
+                  <CollapsibleSection title="Éducation" defaultOpen={false}>
+                    <div className="space-y-2">
+                      {userData.diplomeNiveau && <div><p className="text-xs text-muted-foreground">Niveau</p><p className="text-sm font-medium">{userData.diplomeNiveau}</p></div>}
+                      {userData.diplomeSpecialite && <div><p className="text-xs text-muted-foreground">Spécialité</p><p className="text-sm font-medium">{userData.diplomeSpecialite}</p></div>}
+                      {userData.etablissementEtudes && <div><p className="text-xs text-muted-foreground">Établissement</p><p className="text-sm font-medium">{userData.etablissementEtudes}</p></div>}
+                      {userData.dateObtention && <div><p className="text-xs text-muted-foreground">Année</p><p className="text-sm font-medium">{userData.dateObtention}</p></div>}
+                    </div>
+                  </CollapsibleSection>
+                )}
+              </div>
             ) : (
+              // AFFICHAGE DESKTOP - complet
               <div className="space-y-6">
                 {/* Section Informations Civiles */}
                 <div>
