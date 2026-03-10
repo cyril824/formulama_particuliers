@@ -144,12 +144,25 @@ const HomeContent = ({ refreshKey, onDocumentClick }: { refreshKey: number, onDo
   const handleFillDocument = async () => {
     if (!selectedDoc) return;
     try {
+      // Récupérer les données du profil depuis sessionStorage
+      const profileData = sessionStorage.getItem("userProfileData");
+      if (!profileData) {
+        alert("Veuillez d'abord remplir votre profil avant de remplir un document");
+        return;
+      }
+
+      const userProfile = JSON.parse(profileData);
+
       // Appeler l'API pour marquer le document comme rempli
       const response = await fetch(`${API_BASE_URL}/api/documents/${selectedDoc.id}/fill`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
+        body: JSON.stringify({
+          user_id: 'default_user',
+          profile: userProfile
+        }),
       });
 
       if (!response.ok) {
